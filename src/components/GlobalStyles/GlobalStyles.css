@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+:root{
+  --backGround-color:#fffffe;
+  --backGround-secondary-color: #d8eefe;
+  --text-title-color:#094067;
+  --text-color:#5f6c7b;
+  --height-header: 110px;
+  --height-navi: 50px
+}
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select:  none;
+}
+
+html{
+  //font-size: 62.5%;
+  font-family: "Outfit", sans-serif
+}
+
+a{
+  text-decoration: none;
+}
+li{
+  list-style: none;
+}
+
+// scroll bar
+html ::-webkit-scrollbar {
+  border-radius: 0;
+  width: 8px;
+}
+html *::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: #ced0da;
+}
+html *::-webkit-scrollbar-thumb:hover {
+  border-radius: 4px;
+  background-color: #bfc2cf;
+}
+html *::-webkit-scrollbar-track {
+  border-radius: 0;
+  background-color: rgba(0, 0, 0, 0);
+}
+
+// css swiper
+.swiper {
+  width: 100%;
+  height: 100%;
+}
+
+.swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  background: #444;
+
+  /* Center slide text vertically */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
