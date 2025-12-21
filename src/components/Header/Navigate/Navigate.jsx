@@ -8,6 +8,7 @@ import {
     NavigationMenuTrigger,
     navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
+import { Link } from 'react-router-dom';
 const transparentItem =
     'bg-transparent hover:bg-transparent focus:bg-transparent ' +
     'data-[active]:bg-transparent data-[state=open]:bg-transparent ' +
@@ -21,30 +22,22 @@ export function Navigate() {
                 {/* TRANG CHỦ */}
                 <NavigationMenuItem>
                     <NavigationMenuLink asChild className={`${navigationMenuTriggerStyle()} ${transparentItem}`}>
-                        <a href="#">TRANG CHỦ</a>
+                        <Link to="/">TRANG CHỦ</Link>
                     </NavigationMenuLink>
                 </NavigationMenuItem>
 
                 {/* VỀ CHÚNG TÔI */}
                 <NavigationMenuItem>
                     <NavigationMenuLink asChild className={`${navigationMenuTriggerStyle()} ${transparentItem}`}>
-                        <a href="#">VỀ CHÚNG TÔI</a>
+                        <Link to="/about-us">VỀ CHÚNG TÔI</Link>
                     </NavigationMenuLink>
                 </NavigationMenuItem>
 
                 {/* CỬA HÀNG (DROPDOWN) */}
                 <NavigationMenuItem>
-                    <NavigationMenuTrigger className={`${navigationMenuTriggerStyle()} ${transparentItem}`}>
-                        CỬA HÀNG
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                        <ul className="grid w-[220px] gap-2 p-2">
-                            <DropdownItem title="Thức ăn thú cưng" />
-                            <DropdownItem title="Đồ chơi" />
-                            <DropdownItem title="Phụ kiện" />
-                            <DropdownItem title="Chăm sóc & vệ sinh" />
-                        </ul>
-                    </NavigationMenuContent>
+                    <NavigationMenuLink asChild className={`${navigationMenuTriggerStyle()} ${transparentItem}`}>
+                        <Link to="/cua-hang">CỬA HÀNG</Link>
+                    </NavigationMenuLink>
                 </NavigationMenuItem>
 
                 {/* FLASH DEALS */}
@@ -56,16 +49,9 @@ export function Navigate() {
 
                 {/* CHUYỆN BOSS (DROPDOWN) */}
                 <NavigationMenuItem>
-                    <NavigationMenuTrigger className={`${navigationMenuTriggerStyle()} ${transparentItem}`}>
-                        CHUYỆN BOSS
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                        <ul className="grid w-[220px] gap-2 p-2">
-                            <DropdownItem title="Blog thú cưng" />
-                            <DropdownItem title="Kinh nghiệm nuôi boss" />
-                            <DropdownItem title="Câu chuyện khách hàng" />
-                        </ul>
-                    </NavigationMenuContent>
+                    <NavigationMenuLink asChild className={`${navigationMenuTriggerStyle()} ${transparentItem}`}>
+                        <Link to="/blog">CHUYỆN BOSS</Link>
+                    </NavigationMenuLink>
                 </NavigationMenuItem>
 
                 {/* LIÊN HỆ */}

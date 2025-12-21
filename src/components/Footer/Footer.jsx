@@ -65,7 +65,10 @@ export default function Footer() {
             <div className="bg-white border-t border-gray-200 w-full" style={{ padding: '10px' }}>
                 <div className="w-full flex items-center justify-between">
                     {/* Left - Scroll to top button */}
-                    <button className="w-8 h-8 bg-[#3e1f55] cursor-pointer text-white rounded flex items-center justify-center hover:bg-[#8a3f8e] transition-colors">
+                    <button
+                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                        className="w-8 h-8 bg-[#3e1f55] cursor-pointer text-white rounded flex items-center justify-center hover:bg-[#8a3f8e] transition-colors"
+                    >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
                         </svg>
