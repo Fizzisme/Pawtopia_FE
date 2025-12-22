@@ -260,88 +260,88 @@ export default function Home() {
                 </div>
             </div>
             {/*SẢN PHẨM BÁN CHẠY*/}
-            <div className="h-full flex items-center justify-center" style={{ padding: '0 100px', marginTop: '40px' }}>
-                <button
-                    className="bg-[#f5abc0] hover:bg-[#f38ba8] text-white text-4xl font-semibold rounded-full px-4 py-2 shadow-md h-[50px] flex justify-center items-center"
-                    style={{ padding: '15px' }}
-                >
-                    SẢN PHẨM BÁN CHẠY
-                </button>
-            </div>
-            <div style={{ padding: '0 100px', marginTop: '40px' }}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {bestSellerProducts.map((item) => (
-                        <div
-                            key={item.id}
-                            className="
-                    group
-                    border
-                    rounded-lg
-                    bg-white
-                    flex
-                    flex-col
-                    cursor-pointer
-                    transition-all
-                    duration-300
-                    ease-out
-                    hover:-translate-y-1
-                    hover:shadow-xl
-                "
-                            style={{ padding: '16px' }}
-                        >
-                            {/* Image */}
-                            <div
-                                className="aspect-square flex items-center justify-center overflow-hidden"
-                                style={{ marginBottom: '16px' }}
-                            >
-                                <img
-                                    src={item.image}
-                                    alt={item.name}
-                                    className="
-                            object-contain
-                            h-full
-                            transition-transform
-                            duration-300
-                            group-hover:scale-110
-                        "
-                                />
-                            </div>
+            {/*<div className="h-full flex items-center justify-center" style={{ padding: '0 100px', marginTop: '40px' }}>*/}
+            {/*    <button*/}
+            {/*        className="bg-[#f5abc0] hover:bg-[#f38ba8] text-white text-4xl font-semibold rounded-full px-4 py-2 shadow-md h-[50px] flex justify-center items-center"*/}
+            {/*        style={{ padding: '15px' }}*/}
+            {/*    >*/}
+            {/*        SẢN PHẨM BÁN CHẠY*/}
+            {/*    </button>*/}
+            {/*</div>*/}
+            {/*<div style={{ padding: '0 100px', marginTop: '40px' }}>*/}
+            {/*    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">*/}
+            {/*        {bestSellerProducts.map((item) => (*/}
+            {/*            <div*/}
+            {/*                key={item.id}*/}
+            {/*                className="*/}
+            {/*        group*/}
+            {/*        border*/}
+            {/*        rounded-lg*/}
+            {/*        bg-white*/}
+            {/*        flex*/}
+            {/*        flex-col*/}
+            {/*        cursor-pointer*/}
+            {/*        transition-all*/}
+            {/*        duration-300*/}
+            {/*        ease-out*/}
+            {/*        hover:-translate-y-1*/}
+            {/*        hover:shadow-xl*/}
+            {/*    "*/}
+            {/*                style={{ padding: '16px' }}*/}
+            {/*            >*/}
+            {/*                /!* Image *!/*/}
+            {/*                <div*/}
+            {/*                    className="aspect-square flex items-center justify-center overflow-hidden"*/}
+            {/*                    style={{ marginBottom: '16px' }}*/}
+            {/*                >*/}
+            {/*                    <img*/}
+            {/*                        src={item.image}*/}
+            {/*                        alt={item.name}*/}
+            {/*                        className="*/}
+            {/*                object-contain*/}
+            {/*                h-full*/}
+            {/*                transition-transform*/}
+            {/*                duration-300*/}
+            {/*                group-hover:scale-110*/}
+            {/*            "*/}
+            {/*                    />*/}
+            {/*                </div>*/}
 
-                            {/* Name */}
-                            <h3 className="text-sm text-gray-700 mb-2 line-clamp-2">{item.name}</h3>
+            {/*                /!* Name *!/*/}
+            {/*                <h3 className="text-sm text-gray-700 mb-2 line-clamp-2">{item.name}</h3>*/}
 
-                            {/* Price */}
-                            <div style={{ margin: '16px 0' }}>
-                                {item.oldPrice && (
-                                    <span className="text-sm text-gray-400 line-through" style={{ marginRight: '8px' }}>
-                                        {item.oldPrice.toLocaleString()} VND
-                                    </span>
-                                )}
-                                <span className="text-pink-500 font-semibold">
-                                    {item.price.toLocaleString()} VND VAT
-                                </span>
-                            </div>
+            {/*                /!* Price *!/*/}
+            {/*                <div style={{ margin: '16px 0' }}>*/}
+            {/*                    {item.oldPrice && (*/}
+            {/*                        <span className="text-sm text-gray-400 line-through" style={{ marginRight: '8px' }}>*/}
+            {/*                            {item.oldPrice.toLocaleString()} VND*/}
+            {/*                        </span>*/}
+            {/*                    )}*/}
+            {/*                    <span className="text-pink-500 font-semibold">*/}
+            {/*                        {item.price.toLocaleString()} VND VAT*/}
+            {/*                    </span>*/}
+            {/*                </div>*/}
 
-                            {/* Button */}
-                            <button
-                                className="
-                        mt-auto
-                        bg-pink-500
-                        hover:bg-pink-600
-                        text-white
-                        text-sm
-                        font-medium
-                        rounded-md
-                        transition
-                    "
-                                style={{ padding: '8px' }}
-                            >
-                                {item.button}
-                            </button>
-                        </div>
-                    ))}
-                </div>
-            </div>
+            {/*                /!* Button *!/*/}
+            {/*                <button*/}
+            {/*                    className="*/}
+            {/*            mt-auto*/}
+            {/*            bg-pink-500*/}
+            {/*            hover:bg-pink-600*/}
+            {/*            text-white*/}
+            {/*            text-sm*/}
+            {/*            font-medium*/}
+            {/*            rounded-md*/}
+            {/*            transition*/}
+            {/*        "*/}
+            {/*                    style={{ padding: '8px' }}*/}
+            {/*                >*/}
+            {/*                    {item.button}*/}
+            {/*                </button>*/}
+            {/*            </div>*/}
+            {/*        ))}*/}
+            {/*    </div>*/}
+            {/*</div>*/}
             {/*+50 THƯƠNG HIỆU UY TÍN*/}
             <div className="h-full flex items-center justify-center" style={{ padding: '0 100px', marginTop: '40px' }}>
                 <button
