@@ -11,6 +11,9 @@ import User from '@/pages/User/User.jsx';
 import Product from '@/pages/Product/Product.jsx';
 import LienHe from '@/pages/LienHe/LienHe.jsx';
 import TuVan from '@/pages/TuVan/TuVan.jsx';
+import UserAddress from '@/pages/User/UserAddress/UserAddress.jsx';
+import UserOrder from '@/pages/User/UserOrder/UserOrder.jsx';
+import UserProfile from '@/pages/User/UserProfile/UserProfile.jsx';
 function App() {
     return (
         <Routes>
@@ -22,8 +25,13 @@ function App() {
             <Route path="/cua-hang/:id" element={<CuaHang />} />
             <Route path="/dang-nhap" element={<Login />} />
             <Route path="/dang-ky" element={<Register />} />
-            <Route path="/user" element={<User />} />
             <Route path="/san-pham/:id" element={<Product />} />
+            <Route path="/user" element={<User />}>
+                <Route index element={<UserAddress />} />
+                <Route path="dia-chi" element={<UserAddress />} />
+                <Route path="don-hang" element={<UserOrder />} />
+                <Route path="tai-khoan" element={<UserProfile />} />
+            </Route>
         </Routes>
     );
 }

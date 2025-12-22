@@ -7,7 +7,7 @@ export default function Header() {
     const userStored = localStorage.getItem('User');
     const handleClick = () => {
         if (!userStored) navigate('/dang-nhap');
-        else navigate('/user');
+        else navigate('/user/dia-chi');
     };
     return (
         <div className="flex justify-between items-center h-[64px] bg-[#fff9e8] w-full" style={{ padding: '0 64px' }}>

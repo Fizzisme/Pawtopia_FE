@@ -1,8 +1,11 @@
 import { Heart, Star } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function ProductCard({ product }) {
+    const id = product.id;
     return (
-        <div
+        <Link
+            to={`/san-pham/${id}`}
             className="relative border border-gray-100 flex flex-col h-full bg-white group"
             style={{ padding: '10px' }}
         >
@@ -38,7 +41,7 @@ export default function ProductCard({ product }) {
 
             {/* Giá tiền - Chỉ hiện 1 giá duy nhất cho sản phẩm bình thường */}
             <div className="flex items-center gap-1 text-[14px]" style={{ marginBottom: '12px' }}>
-                <span className="text-black font-bold">{product.price?.toLocaleString()} VNĐ</span>
+                <span className="text-black font-bold">{product.oldPrice?.toLocaleString()} VNĐ</span>
                 <span className="text-[10px] text-gray-500 uppercase">VAT</span>
             </div>
 
@@ -48,6 +51,7 @@ export default function ProductCard({ product }) {
                     <span
                         key={idx}
                         className="border border-gray-200 text-[10px] text-gray-500 px-1.5 py-[2px] rounded"
+                        style={{ padding: '2px' }}
                     >
                         {v}
                     </span>
@@ -56,8 +60,8 @@ export default function ProductCard({ product }) {
 
             {/* Nút bấm mua hàng */}
             <button
-                className="w-full bg-[#f4a7bb] text-white py-2 rounded-full text-[12px] font-bold uppercase hover:bg-pink-400 transition-colors"
-                style={{ marginBottom: '10px' }}
+                className="w-full bg-[#f4a7bb] cursor-pointer text-white rounded-full text-[12px] font-bold uppercase hover:bg-pink-400 transition-colors"
+                style={{ marginBottom: '10px', padding: '8px 0' }}
             >
                 MUA NGAY
             </button>
@@ -67,6 +71,6 @@ export default function ProductCard({ product }) {
                 <Heart size={14} />
                 <span>Yêu Thích</span>
             </div>
-        </div>
+        </Link>
     );
 }

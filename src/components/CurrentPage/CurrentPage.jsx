@@ -9,13 +9,16 @@ export default function CurrentPage() {
     const breadcrumbMap = {
         '/about-us': 'Về Chúng Tôi',
         '/blog': 'Chuyện Boss',
-        '/cua-hang': 'Cửa Hàng',
         '/flash-deals': 'Flash Deals',
         '/lien-he': 'Liên Hệ',
         '/tu-van': 'Tư Vấn',
         '/dang-nhap': 'Đăng Nhập',
         '/dang-ky': 'Đăng Ký',
         '/user': 'Người Dùng',
+        '/cua-hang/C1': 'Thức ăn hạt cho chó',
+        '/user/don-hang': 'Đơn Hàng',
+        '/user/dia-chi': 'Địa Chỉ',
+        '/user/tai-khoan': 'Tài Khoản',
     };
 
     const currentPageName = breadcrumbMap[pathname] || pathname.split('/').pop();
