@@ -9,7 +9,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 export default function Register() {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        username: '',
+        Name: '',
         email: '',
         password: '',
         confirmPassword: '',
@@ -31,7 +31,7 @@ export default function Register() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (formData.username < 2) {
+        if (formData.Name < 2) {
             setErrorMessage('Tên đăng nhập phải trên 2 ký tự');
             return;
         }
@@ -105,8 +105,8 @@ export default function Register() {
                             <Cat className="absolute left-4 top-1/2 -translate-y-1/2 text-pink-300" size={20} />
                             <input
                                 type="text"
-                                name="username" // QUAN TRỌNG
-                                value={formData.username} // QUAN TRỌNG
+                                name="Name" // QUAN TRỌNG
+                                value={formData.Name} // QUAN TRỌNG
                                 onChange={handleChange} // QUAN TRỌNG
                                 placeholder="Tên đăng nhập"
                                 className="w-full bg-pink-50 border-none rounded-full outline-none focus:ring-2 focus:ring-pink-200 text-gray-700 transition-all placeholder:text-gray-400"

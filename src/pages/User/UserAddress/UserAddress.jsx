@@ -140,20 +140,43 @@ export default function UserAddress() {
         }
 
         const updatedUser = {
-            Id: userStorage.id,
+            UserId: userStorage.id,
             PhoneNumber: formData.PhoneNumber,
             DetailAddress: formData.DetailAddress,
             Province: formData.Province,
             District: formData.District,
             Ward: formData.Ward,
+            FullName: userStorage.displayName || 'PHi',
         };
 
-        console.log('Updated address:', updatedUser);
+        if (!updatedUser) return;
 
-        // Lưu vào localStorage
-        // localStorage.setItem('User', JSON.stringify(updatedUser));
-
-        alert('Cập nhật địa chỉ thành công!');
+        fetch('https://localhost:7216/api/Address/save', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedUser),
+        })
+            .then((res) => {
+                if (!res.ok) throw new Error('API error');
+                return res.json();
+            })
+            .then((data) => {
+                console.log('Save success', data);
+                const userToStore = {
+                    ...updatedUser,
+                    id: updatedUser.UserId,
+                    displayname: updatedUser.FullName,
+                };
+                delete userToStore.UserId;
+                delete userToStore.FullName;
+                localStorage.setItem('User', JSON.stringify(userToStore));
+                alert('Cập nhật địa chỉ thành công!');
+            })
+            .catch((err) => {
+                console.error('Save failed', err);
+            });
     };
 
     return (
