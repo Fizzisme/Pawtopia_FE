@@ -164,7 +164,7 @@ export default function Cart() {
         // TODO: `orderId` can only be in correct guid format!
         const orderId = `ORDER-${Date.now()}`;
 
-        // Schema defined at `src/backend/checkout-input-chema`
+        // Schema defined at `src/backend/checkout-input-schema`
         const payload = checkoutInputSchema.parse({
             order_invoice_number: orderId,
             order_amount: finalTotal,
