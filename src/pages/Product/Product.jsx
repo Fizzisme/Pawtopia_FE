@@ -22,6 +22,38 @@ export default function Product() {
         }
     }, [id]);
 
+    const handleClickCart = () => {
+        // 1. Lấy dữ liệu cũ từ LocalStorage (Dạng chuỗi)
+        const storedCartString = localStorage.getItem('productCarts');
+
+        // 2. Chuyển từ Chuỗi sang Mảng (Array). Nếu chưa có gì thì tạo mảng rỗng []
+        let cartArray = storedCartString ? JSON.parse(storedCartString) : [];
+
+        // 3. Kiểm tra xem sản phẩm này đã nằm trong giỏ hàng chưa?
+        // (So sánh theo id)
+        const existingIndex = cartArray.findIndex((item) => item.id === foundProduct.id);
+
+        if (existingIndex !== -1) {
+            // TRƯỜNG HỢP 1: Sản phẩm ĐÃ CÓ -> Cộng dồn số lượng
+            // (Lấy số lượng cũ + số lượng đang chọn)
+            cartArray[existingIndex].quantity += quantity;
+        } else {
+            // TRƯỜNG HỢP 2: Sản phẩm MỚI -> Thêm vào mảng
+            // Tạo object mới gồm thông tin sản phẩm + số lượng đang chọn
+            const newItem = {
+                ...foundProduct,
+                quantity: quantity,
+            };
+            cartArray.push(newItem);
+        }
+
+        // 4. Lưu ngược lại vào LocalStorage (Chuyển mảng thành chuỗi JSON)
+        // LƯU Ý: Key phải là 'productCarts'
+        localStorage.setItem('productCarts', JSON.stringify(cartArray));
+
+        alert('Đã thêm vào giỏ hàng thành công!');
+    };
+
     return (
         <div>
             <Header />
@@ -102,6 +134,7 @@ export default function Product() {
 
                         <div className="flex gap-5" style={{ padding: ' 0 10px' }}>
                             <button
+                                onClick={handleClickCart}
                                 className="flex-1 bg-pink-200 text-pink-700 font-bold rounded-full hover:bg-pink-300 transition"
                                 style={{ padding: '8px 0' }}
                             >

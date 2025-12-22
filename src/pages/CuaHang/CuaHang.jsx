@@ -38,7 +38,7 @@ export default function CuaHang() {
                         description: item.description,
                         name: item.name,
                         image: item.thumbImageLink || 'https://via.placeholder.com/400',
-                        oldPrice: item.price ? item.price * 1.2 : 150000,
+                        oldPrice: item.price,
                         newPrice: item.price || 0,
                         rating: 5,
                         variants: ['Mặc định'],

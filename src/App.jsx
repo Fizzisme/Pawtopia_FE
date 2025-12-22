@@ -14,6 +14,7 @@ import TuVan from '@/pages/TuVan/TuVan.jsx';
 import UserAddress from '@/pages/User/UserAddress/UserAddress.jsx';
 import UserOrder from '@/pages/User/UserOrder/UserOrder.jsx';
 import UserProfile from '@/pages/User/UserProfile/UserProfile.jsx';
+import Cart from '@/pages/Cart/Cart.jsx';
 function App() {
     return (
         <Routes>
@@ -32,6 +33,7 @@ function App() {
                 <Route path="don-hang" element={<UserOrder />} />
                 <Route path="tai-khoan" element={<UserProfile />} />
             </Route>
+            <Route path="/gio-hang" element={<Cart />} />
         </Routes>
     );
 }

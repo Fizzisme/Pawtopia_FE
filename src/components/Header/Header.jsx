@@ -18,8 +18,9 @@ export default function Header() {
             <div className="flex gap-2">
                 <Search />
                 <User className="cursor-pointer" onClick={handleClick} />
-                <Heart />
-                <ShoppingBasket />
+                <Link to="/gio-hang">
+                    <ShoppingBasket />
+                </Link>
             </div>
         </div>
     );
