@@ -9,9 +9,9 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 export default function Register() {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        Name: '',
-        Email: '',
-        Password: '',
+        username: '',
+        email: '',
+        password: '',
         confirmPassword: '',
     });
 
