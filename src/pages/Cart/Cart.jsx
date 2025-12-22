@@ -119,7 +119,7 @@ export default function Cart() {
         return saved ? JSON.parse(saved) : [];
     });
     const navigate = useNavigate();
-    const user = localStorage.getItem('User');
+    const user = JSON.parse(localStorage.getItem('User'));
     const [shippingMethod, setShippingMethod] = useState('tietkiem');
 
     // 2. Logic cập nhật số lượng
@@ -162,7 +162,6 @@ export default function Cart() {
     }, []);
 
     const [paymentMethod, setPaymentMethod] = useState('cod');
-
     const handleCheckout = () => {
         if (!user) {
             navigate('/dang-nhap');
@@ -170,13 +169,46 @@ export default function Cart() {
         }
 
         // Đã đăng nhập nhưng thiếu thông tin
-        if (!user?.phoneNumber || !user?.detailAddress) {
+        if (!user?.PhoneNumber || !user?.DetailAddress) {
             navigate('/user/dia-chi');
             return;
         }
 
-        // Đủ điều kiện thanh toán
-        navigate('/thanh-toan');
+        const productCarts = JSON.parse(localStorage.getItem('productCarts')) || [];
+
+        const payload = {
+            UserId: user.id,
+            FullName: user.displayname,
+            PhoneNumber: user.PhoneNumber,
+            AddressLine: user.DetailAddress,
+            Ward: user.Ward,
+            Province: user.Province,
+            District: user.District,
+
+            Items: productCarts.map((item) => ({
+                ProductId: item.id.toString(),
+                Quantity: item.quantity,
+                Price: item.newPrice,
+            })),
+        };
+
+        console.log('PAYLOAD >>>', payload);
+
+        fetch('https://localhost:7216/api/payment/place-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload), // ✅ ĐÚNG
+        })
+            .then((res) => {
+                if (!res.ok) throw new Error('Place order failed');
+                return res.json();
+            })
+            .then((data) => {
+                console.log('ORDER SUCCESS', data);
+            })
+            .catch((err) => console.error(err));
+
+        //  navigate('/thanh-toan');
     };
     return (
         <div>
