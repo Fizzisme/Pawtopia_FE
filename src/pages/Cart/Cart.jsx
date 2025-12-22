@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { X, Heart, Star } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header/Header.jsx';
 import { checkoutInputSchema } from '@/backend/checkout-input-schema';
 import { buildUrl } from '@/lib/utils';
@@ -151,7 +151,27 @@ export default function Cart() {
     // Tính tổng thanh toán cuối cùng
     const finalTotal = subTotal + shippingFee;
 
-    // 5. Payment method
+    // 5. Payment method - COD
+    const navigate = useNavigate();
+    const user = localStorage.getItem('User');
+
+    const handleCheckout = () => {
+        if (!user) {
+            navigate('/dang-nhap');
+            return;
+        }
+
+        // Đã đăng nhập nhưng thiếu thông tin
+        if (!user?.phoneNumber || !user?.detailAddress) {
+            navigate('/user/dia-chi');
+            return;
+        }
+
+        // Đủ điều kiện thanh toán
+        navigate('/thanh-toan');
+    };
+
+    // 5. Payment method - Banking
     const [paymentMethod, setPaymentMethod] = useState('cod');
 
     // Sepay
@@ -364,17 +384,16 @@ export default function Cart() {
                                         </div>
                                     </div>
 
-                                    <form action={checkoutUrl} method="POST">
-                                        {Object.keys(fields ?? {}).map(field => (
-                                            <input key={field} type="hidden" name={field} value={fields[field]} />
-                                        ))}
-                                        <button
-                                            className="w-full cursor-pointer bg-[#f4a7bb] text-white font-bold text-lg rounded-xl hover:bg-pink-400 transition-colors shadow-sm uppercase py-3"
-                                            type="submit"
-                                        >
-                                            Thanh toán
-                                        </button>
-                                    </form>
+                                    {paymentMethod === "banking"
+                                        ?
+                                        <form action={checkoutUrl} method="POST">
+                                            {Object.keys(fields ?? {}).map(field => (
+                                                <input key={field} type="hidden" name={field} value={fields[field]} />
+                                            ))}
+                                            <PayButton type="submit" />
+                                        </form>
+                                        :
+                                        <PayButton onClick={handleCheckout} />}
                                 </div>
                             </div>
                         </div>
@@ -383,4 +402,14 @@ export default function Cart() {
             </div>
         </div>
     );
+}
+
+function PayButton({ type, onClick }) {
+    return <button
+        className="w-full cursor-pointer bg-[#f4a7bb] text-white font-bold text-lg rounded-xl hover:bg-pink-400 transition-colors shadow-sm uppercase py-3"
+        type={type}
+        onClick={onClick}
+    >
+        Thanh toán
+    </button>
 }
