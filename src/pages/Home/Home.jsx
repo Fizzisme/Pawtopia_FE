@@ -13,30 +13,36 @@ import RoyalCanin from '@/assets/RoyalCanin.png';
 import DogToy from '@/assets/dogToy.png';
 import twoCat from '@/assets/catTakeCareCat.png';
 import catFurniture from '@/assets/catFurniture.png';
+import { Link } from 'react-router-dom';
 const categories = [
     {
         id: 1,
         title: 'Thức ăn hạt cho chó',
+        link: '/cua-hang/C1',
         image: NDFood,
     },
     {
         id: 2,
         title: 'Dinh dưỡng cho mèo',
+        link: '/cua-hang/C2',
         image: RoyalCanin,
     },
     {
         id: 3,
         title: 'Phụ kiện & Đồ chơi',
+        link: '/cua-hang/C3',
         image: DogToy,
     },
     {
         id: 4,
         title: 'Chăm sóc Boss yêu',
+        link: '/cua-hang/C4',
         image: twoCat,
     },
     {
         id: 5,
         title: 'Vật dụng nhà ở',
+        link: '/cua-hang/C5',
         image: catFurniture,
     },
 ];
@@ -220,16 +226,15 @@ export default function Home() {
                 {' '}
                 <div className="max-w-7xl mx-auto bg-white">
                     {/* Header section */}
-                    <div className="flex justify-end mb-6">
-                        <a href="#" className="text-purple-900 font-semibold hover:underline flex items-center">
-                            Xem tất cả
-                        </a>
-                    </div>
 
                     {/* Grid container */}
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
                         {categories.map((item) => (
-                            <div key={item.id} className="flex flex-col items-center group cursor-pointer">
+                            <Link
+                                to={item.link}
+                                key={item.id}
+                                className="flex flex-col items-center group cursor-pointer"
+                            >
                                 {/* Circle Container */}
                                 <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-full bg-white border border-gray-100 shadow-sm flex items-center justify-center overflow-hidden transition-transform duration-300 group-hover:scale-105">
                                     {/* Giả lập vòng tròn mờ bên ngoài như trong ảnh */}
@@ -249,7 +254,7 @@ export default function Home() {
                                 >
                                     {item.title}
                                 </h3>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 </div>

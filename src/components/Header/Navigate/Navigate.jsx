@@ -9,6 +9,7 @@ import {
     navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 import { Link } from 'react-router-dom';
+
 const transparentItem =
     'bg-transparent hover:bg-transparent focus:bg-transparent ' +
     'data-[active]:bg-transparent data-[state=open]:bg-transparent ' +
@@ -35,19 +36,29 @@ export function Navigate() {
 
                 {/* CỬA HÀNG (DROPDOWN) */}
                 <NavigationMenuItem>
-                    <NavigationMenuLink asChild className={`${navigationMenuTriggerStyle()} ${transparentItem}`}>
-                        <Link to="/cua-hang">CỬA HÀNG</Link>
-                    </NavigationMenuLink>
+                    <NavigationMenuTrigger className={transparentItem}> CỬA HÀNG </NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                        <ul className="grid gap-2 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                            <ListItem href="/cua-hang/C1" title="Thức ăn hạt cho chó">
+                                Hạt, pate và bánh thưởng dinh dưỡng.
+                            </ListItem>
+                            <ListItem href="/cua-hang/C2" title="Dinh dưỡng cho mèo">
+                                Hạt, pate và bánh thưởng dinh dưỡng.
+                            </ListItem>
+                            <ListItem href="/cua-hang/C3" title="Phụ Kiện và đồ chơi">
+                                Đồ chơi vòng, bóng, lắc.
+                            </ListItem>
+                            <ListItem href="/cua-hang/C4" title="Chăm sóc Boss yêu">
+                                Sản phẩm chăm sóc sức khỏe Boss.
+                            </ListItem>
+                            <ListItem href="/cua-hang/C5" title="Vật dụng nhà ở">
+                                Khay vệ sinh, nhà cây và đồ chơi.
+                            </ListItem>
+                        </ul>
+                    </NavigationMenuContent>
                 </NavigationMenuItem>
 
-                {/* FLASH DEALS */}
-                <NavigationMenuItem>
-                    <NavigationMenuLink asChild className={`${navigationMenuTriggerStyle()} ${transparentItem}`}>
-                        <a href="#">FLASH DEALS</a>
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-
-                {/* CHUYỆN BOSS (DROPDOWN) */}
+                {/* CHUYỆN BOSS */}
                 <NavigationMenuItem>
                     <NavigationMenuLink asChild className={`${navigationMenuTriggerStyle()} ${transparentItem}`}>
                         <Link to="/blog">CHUYỆN BOSS</Link>
@@ -57,14 +68,14 @@ export function Navigate() {
                 {/* LIÊN HỆ */}
                 <NavigationMenuItem>
                     <NavigationMenuLink asChild className={`${navigationMenuTriggerStyle()} ${transparentItem}`}>
-                        <a href="#">LIÊN HỆ</a>
+                        <Link to="/lien-he">LIÊN HỆ</Link>
                     </NavigationMenuLink>
                 </NavigationMenuItem>
 
                 {/* TƯ VẤN */}
                 <NavigationMenuItem>
                     <NavigationMenuLink asChild className={`${navigationMenuTriggerStyle()} ${transparentItem}`}>
-                        <a href="#">TƯ VẤN</a>
+                        <Link to="/tu-van">TƯ VẤN</Link>
                     </NavigationMenuLink>
                 </NavigationMenuItem>
             </NavigationMenuList>
@@ -72,16 +83,27 @@ export function Navigate() {
     );
 }
 
-/* ---------- Helpers ---------- */
+/* ---------- Helpers (Đã sửa lỗi dòng 104) ---------- */
 
-function DropdownItem({ title }) {
+// Sửa lại: Xóa bỏ toàn bộ phần ": React.ComponentProps..."
+// Sử dụng forwardRef để hỗ trợ shadcn/ui tốt nhất
+const ListItem = React.forwardRef(({ className, title, children, href, ...props }, ref) => {
     return (
         <li>
             <NavigationMenuLink asChild>
-                <a href="#" className="block rounded-md px-3 py-2 text-sm hover:bg-muted">
-                    {title}
-                </a>
+                <Link
+                    ref={ref}
+                    to={href} // Link của React Router dùng 'to'
+                    className={`block select-none  rounded-md leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground ${className}`}
+                    style={{ padding: '12px' }}
+                    {...props}
+                >
+                    <div className="text-sm font-medium leading-none">{title}</div>
+                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">{children}</p>
+                </Link>
             </NavigationMenuLink>
         </li>
     );
-}
+});
+
+ListItem.displayName = 'ListItem';
