@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { X, Heart, Star } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Header from '@/components/Header/Header.jsx';
+import { checkoutInputSchema } from '@/backend/checkout-input-schema';
+import { buildUrl } from '@/lib/utils';
 
 // Component con: 1 Dòng sản phẩm trong giỏ hàng
 const CartItem = ({ item, updateQuantity, removeItem }) => {
@@ -151,9 +153,41 @@ export default function Cart() {
     // Tính tổng thanh toán cuối cùng
     const finalTotal = subTotal + shippingFee;
 
-    // --- Mock Data Recommend ---
+    // 5. Payment method
+    const [paymentMethod, setPaymentMethod] = useState('cod');
 
-    const [randomProducts, setRandomProducts] = useState([]);
+    // Sepay
+    const [checkoutUrl, setCheckoutUrl] = useState('')
+    const [fields, setFields] = useState({})
+
+    const fetchSepayPaymentData = useCallback(() => {
+        if (paymentMethod !== "banking") return
+
+        // TODO: `orderId` can only be in correct guid format!
+        const orderId = `ORDER-${Date.now()}`;
+
+        // Schema defined at `src/backend/checkout-input-schema`
+        const payload = checkoutInputSchema.parse({
+            order_invoice_number: orderId,
+            order_amount: finalTotal,
+            currency: 'VND',
+            order_description: 'Pawtopia order payment', // TODO
+            success_url: buildUrl(`/payment/success/${orderId}`),
+            error_url: buildUrl(`/payment/error/${orderId}`),
+            cancel_url: buildUrl(`/payment/cancel/${orderId}`),
+        });
+
+        fetch('/api/create-checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        })
+            .then(res => res.json())
+            .then(data => {
+                setCheckoutUrl(data.checkoutUrl)
+                setFields(data.fields)
+            })
+    }, [finalTotal, paymentMethod])
 
     useEffect(() => {
         const allProductsData = JSON.parse(localStorage.getItem('products')) || [];
@@ -379,12 +413,17 @@ export default function Cart() {
                                         </div>
                                     </div>
 
-                                    <button
-                                        className="w-full cursor-pointer bg-[#f4a7bb] text-white font-bold text-lg rounded-xl hover:bg-pink-400 transition-colors shadow-sm uppercase py-3"
-                                        onClick={handleCheckout}
-                                    >
-                                        Thanh toán
-                                    </button>
+                                    <form action={checkoutUrl} method="POST">
+                                        {Object.keys(fields ?? {}).map(field => (
+                                            <input key={field} type="hidden" name={field} value={fields[field]} />
+                                        ))}
+                                        <button
+                                            className="w-full cursor-pointer bg-[#f4a7bb] text-white font-bold text-lg rounded-xl hover:bg-pink-400 transition-colors shadow-sm uppercase py-3"
+                                            type="submit"
+                                        >
+                                            Thanh toán
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
