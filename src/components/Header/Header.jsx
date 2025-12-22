@@ -7,8 +7,9 @@ export default function Header() {
     const userStored = localStorage.getItem('User');
     const handleClick = () => {
         if (!userStored) navigate('/dang-nhap');
-        else navigate('/user/dia-chi');
+        else navigate('/user/tai-khoan');
     };
+
     return (
         <div className="flex justify-between items-center h-[64px] bg-[#fff9e8] w-full" style={{ padding: '0 64px' }}>
             <Link to="/">
@@ -18,6 +19,7 @@ export default function Header() {
             <div className="flex gap-2">
                 <Search />
                 <User className="cursor-pointer" onClick={handleClick} />
+
                 <Link to="/gio-hang">
                     <ShoppingBasket />
                 </Link>
