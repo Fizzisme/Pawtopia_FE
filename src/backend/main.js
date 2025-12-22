@@ -27,7 +27,7 @@ app.post("/create-checkout", async (req, res) => {
     } catch (err) {
         return sendJson(
             res,
-            { error: "Invalid payload", details: err instanceof Error ? err.message : String(err) },
+            { error: "Invalid checkout request payload: failed schema validation", details: err instanceof Error ? err.message : String(err) },
             400,
         );
     }
