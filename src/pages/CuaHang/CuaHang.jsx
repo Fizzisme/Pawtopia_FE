@@ -4,60 +4,60 @@ import Footer from '@/components/Footer/Footer.jsx';
 import Help from '@/components/Help/Help.jsx';
 import { useState, useEffect } from 'react';
 import ProductCard from './ProductCard/ProductCard.jsx';
-import { useLocation } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 export default function CuaHang() {
+    const productsPerPage = 24;
+
     // 1. Khai báo state để chứa danh sách sản phẩm từ API
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
-    const productsPerPage = 24;
     const [currentPage, setCurrentPage] = useState(1);
-    const { id } = useParams();
 
-    const location = useLocation(); // Nên đặt tên là location cho dễ hiểu
-    const currentPath = location.pathname; // Lấy chuỗi đường dẫn (ví dụ: '/cua-hang/C1')
+    // 2. Filter by `categoryId`
+    const { id: paramCategoryId } = useParams();
+    const categoryId = paramCategoryId ?? ""
+    const productsApiUrl = categoryId == ""
+        ? "https://localhost:7216/api/Product/all"
+        : `https://localhost:7216/api/Product/by-category/${categoryId}`
 
     useEffect(() => {
         // Kiểm tra điều kiện bên trong useEffect
-        if (id === 'C1') {
-            const fetchProducts = async () => {
-                try {
-                    setLoading(true);
-                    const response = await fetch('https://localhost:7216/api/Product/all');
+        const fetchProducts = async () => {
+            try {
+                setLoading(true);
+                const response = await fetch(productsApiUrl);
 
-                    if (!response.ok) {
-                        throw new Error('Không thể lấy dữ liệu từ server');
-                    }
-
-                    const data = await response.json();
-
-                    const mappedProducts = data.map((item) => ({
-                        id: item.id,
-                        description: item.description,
-                        name: item.name,
-                        image: item.thumbImageLink || 'https://via.placeholder.com/400',
-                        oldPrice: item.price,
-                        newPrice: item.price || 0,
-                        rating: 5,
-                        variants: ['Mặc định'],
-                    }));
-
-                    localStorage.setItem('products', JSON.stringify(mappedProducts));
-
-                    setProducts(mappedProducts);
-                } catch (err) {
-                    console.error('Lỗi gọi API:', err);
-                    setError(err.message);
-                } finally {
-                    setLoading(false);
+                if (!response.ok) {
+                    throw new Error('Không thể lấy dữ liệu từ server');
                 }
-            };
 
-            fetchProducts();
-        }
-    }, [id]); // Thêm currentPath vào dependency để gọi lại khi đổi trang
+                const data = await response.json();
+
+                const mappedProducts = data.map((item) => ({
+                    id: item.id,
+                    description: item.description,
+                    name: item.name,
+                    image: item.thumbImageLink || 'https://via.placeholder.com/400',
+                    oldPrice: item.price,
+                    newPrice: item.price || 0,
+                    rating: 5,
+                    variants: ['Mặc định'],
+                }));
+
+                localStorage.setItem('products', JSON.stringify(mappedProducts));
+
+                setProducts(mappedProducts);
+            } catch (err) {
+                console.error('Lỗi gọi API:', err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, [productsApiUrl]);
 
     // 4. Tính toán phân trang dựa trên danh sách sản phẩm thực tế từ API
     const indexOfLastProduct = currentPage * productsPerPage;
@@ -118,9 +118,8 @@ export default function CuaHang() {
                                     <button
                                         key={i}
                                         onClick={() => setCurrentPage(i + 1)}
-                                        className={`w-10 h-10 border rounded font-medium transition-colors ${
-                                            currentPage === i + 1 ? 'bg-[#6a1f6e] text-white' : 'hover:bg-gray-50'
-                                        }`}
+                                        className={`w-10 h-10 border rounded font-medium transition-colors ${currentPage === i + 1 ? 'bg-[#6a1f6e] text-white' : 'hover:bg-gray-50'
+                                            }`}
                                     >
                                         {i + 1}
                                     </button>
