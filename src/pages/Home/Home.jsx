@@ -81,16 +81,33 @@ const bestSellerProducts = [
     },
 ];
 import Absorb from '@/assets/brands/thuonghieu1.webp';
+import Yu from '@/assets/brands/thuonghieu2.jpg';
+import Snappy from '@/assets/brands/thuonghieu3.jpg';
+import Alkin from '@/assets/brands/thuonghieu4.png';
+import Forcans from '@/assets/brands/thuonghieu5.png';
+import Farmina from '@/assets/brands/thuonghieu6.png';
+import Elanco from '@/assets/brands/thuonghieu7.png';
+import Royal from '@/assets/brands/thuonghieu8.webp';
+import Brit from '@/assets/brands/thuonghieu9.png';
+import Beaphar from '@/assets/brands/thuonghieu10.png';
+import King from '@/assets/brands/thuonghieu11.png';
+import Natural from '@/assets/brands/thuonghieu12.png';
 import { Phone } from 'lucide-react';
 import Footer from '@/components/Footer/Footer.jsx';
 import Help from '@/components/Help/Help.jsx';
 const brands = [
     { id: 1, name: 'Absorb Plus', logo: Absorb },
-    { id: 2, name: 'Absorb Plus', logo: Absorb },
-    { id: 3, name: 'Absorb Plus', logo: Absorb },
-    { id: 4, name: 'Absorb Plus', logo: Absorb },
-    { id: 5, name: 'Absorb Plus', logo: Absorb },
-    { id: 6, name: 'Absorb Plus', logo: Absorb },
+    { id: 2, name: 'Yú', logo: Yu },
+    { id: 3, name: 'Snappy Tom', logo: Snappy },
+    { id: 4, name: 'Alkin', logo: Alkin },
+    { id: 5, name: 'Forcans', logo: Forcans },
+    { id: 6, name: 'N&D Farmina', logo: Farmina },
+    { id: 7, name: 'Elanco', logo: Elanco },
+    { id: 8, name: 'Royal Cannin', logo: Royal },
+    { id: 9, name: 'Brit Care', logo: Brit },
+    { id: 10, name: 'Beaphar', logo: Beaphar },
+    { id: 11, name: 'King Pet', logo: King },
+    { id: 12, name: 'Natural Core', logo: Natural },
 ];
 export default function Home() {
     return (
