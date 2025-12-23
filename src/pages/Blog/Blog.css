@@ -1,0 +1,120 @@
+.blog-title {
+    font-weight: 700;
+    font-size: 28px;
+}
+.post-row {
+    display: flex;
+    gap: 20px;
+    margin: 28px 0;
+    align-items: flex-start;
+}
+
+/* KHỐI ẢNH */
+.post-row .post-img {
+    flex: 0 0 200px;        /* 👈 ảnh nhỏ gọn */
+    max-width: 200px;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+/* ẢNH */
+.post-row .post-img img {
+    width: 100%;
+    height: 140px;         /* 👈 cố định chiều cao */
+    object-fit: cover;     /* 👈 KHÔNG MÉO */
+    transition: transform 0.3s ease;
+}
+
+/* Hover nhẹ thôi */
+.post-row:hover .post-img img {
+    transform: scale(1.05);
+}
+.post-content {
+    flex: 1;
+}
+
+.post-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.post-row:hover .post-title {
+    color: #e11d48;
+}
+
+.post-excerpt {
+    font-size: 15px;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+
+.post-meta {
+    font-size: 13px;
+    color: #888;
+}
+
+.post-meta .dot {
+    margin: 0 6px;
+}
+.sidebar-sticky {
+    position: sticky;
+    top: 20px;
+}
+
+.sidebar-block {
+    background: #fff;
+    padding: 15px;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 18px;
+}
+
+.sidebar-title {
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.sidebar-item {
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.sidebar-item:hover {
+    color: #e11d48;
+}
+.sidebar-post {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+    align-items: center;
+}
+
+.sidebar-post img {
+    width: 70px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.sidebar-post p {
+    font-size: 13px;
+    margin: 0;
+}
+@media (max-width: 768px) {
+    .post-row {
+        flex-direction: column;
+    }
+
+    .post-row .post-img {
+        max-width: 100%;
+    }
+
+    .post-row .post-img img {
+        height: 200px;
+    }
+}

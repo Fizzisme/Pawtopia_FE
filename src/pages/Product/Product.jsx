@@ -55,6 +55,18 @@ export default function Product() {
 
         alert('Đã thêm vào giỏ hàng thành công!');
     };
+    const handleChangeImage = (img) => {
+        setImages((prevImages) => {
+            // 1. Xóa img khỏi mảng
+            const newImages = prevImages.filter((i) => i !== img);
+
+            // 2. Thêm mainImage (ảnh cũ) vào mảng
+            return [...newImages, mainImage];
+        });
+
+        // 3. Set ảnh chính thành img
+        setMainImage(img);
+    };
 
     return (
         <div>
@@ -68,22 +80,22 @@ export default function Product() {
                     {/* BÊN TRÁI: ẢNH SẢN PHẨM */}
                     <div className="w-full md:w-1/2" style={{ paddingLeft: '100px' }}>
                         <div className="relative   rounded-lg overflow-hidden">
-                            <img src={mainImage} alt="product" className="w-[80%] object-cover" />
+                            <img src={mainImage} alt="product" className="w-[80%] object-cover rounded-2xl" />
                         </div>
                         {/* Danh sách ảnh nhỏ (Thumbnails) */}
                         <div className="grid grid-cols-5 gap-2" style={{ marginTop: '16px' }}>
-                            {product?.images.map((img, index) => (
+                            {images.map((img, index) => (
                                 <img
                                     key={index}
                                     src={img}
                                     alt="thumb"
-                                    // className={`border rounded cursor-pointer hover:border-pink-500 ${
-                                    //     mainImage === img ? 'border-pink-500' : ''
-                                    // }`}
-                                    // onClick={() => setMainImage(img)}
+                                    className={`border rounded cursor-pointer hover:border-pink-500 ${
+                                        mainImage === img ? 'border-pink-500' : ''
+                                    }`}
+                                    onClick={() => handleChangeImage(img)}
                                 />
                             ))}
-                            {/*<img src={product?.image} className={} alt="" />*/}
+                            <img src={mainImage} alt="" />
                         </div>
                     </div>
 
@@ -132,16 +144,16 @@ export default function Product() {
                                     +
                                 </button>
                             </div>
-                        </div>
 
-                        <div className="flex gap-5" style={{ padding: ' 0 10px' }}>
-                            <button
-                                onClick={handleClickCart}
-                                className="flex-1 cursor-pointer bg-pink-200 text-pink-700 font-bold rounded-full hover:bg-pink-300 transition"
-                                style={{ padding: '8px 0' }}
-                            >
-                                THÊM VÀO GIỎ HÀNG
-                            </button>
+                            <div className="flex gap-5" style={{ width: '30%' }}>
+                                <button
+                                    onClick={handleClickCart}
+                                    className="flex-1 cursor-pointer bg-pink-200 text-pink-700 font-bold rounded-full hover:bg-pink-300 transition"
+                                    style={{ padding: '8px 0' }}
+                                >
+                                    THÊM VÀO GIỎ HÀNG
+                                </button>
+                            </div>
                         </div>
 
                         <div
@@ -151,7 +163,10 @@ export default function Product() {
                             ♡ Thêm vào mục Yêu thích
                         </div>
 
-                        <p style={{ marginTop: '15px', padding: '0 5px' }}>{foundProduct.description}</p>
+                        <p className="uppercase font-semibold" style={{ marginTop: '10px', padding: '0 5px' }}>
+                            THông tin sản phẩm
+                        </p>
+                        <p style={{ padding: '0 5px', width: '80%' }}>{foundProduct.description}</p>
                     </div>
                 </div>
             </main>

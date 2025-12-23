@@ -141,6 +141,8 @@ export default function UserProduct() {
                 body: JSON.stringify(payload),
             });
 
+            console.log(res);
+
             if (res.ok) {
                 alert(editingId ? 'Cập nhật thành công!' : 'Thêm sản phẩm thành công!');
                 handleCloseForm();

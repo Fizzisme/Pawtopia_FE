@@ -148,6 +148,11 @@ export default function Cart() {
 
     // --- HÀM THANH TOÁN COD (ĐÃ SỬA MẠNH TAY) ---
     const handleCheckoutCOD = () => {
+        if (!cartItems?.length) {
+            toast('Vui lòng thêm ít nhất một sản phẩm!');
+            return;
+        }
+
         if (!user) {
             navigate('/dang-nhap');
             return;
