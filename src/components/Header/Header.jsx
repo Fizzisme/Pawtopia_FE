@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'; // Import hooks
 import { Navigate } from '@/components/Header/Navigate/Navigate.jsx';
-import pawtopiaLogo from '@/assets/pawtopiaLogo.png';
+
+import pawtopiaLogo from '@/assets/pawtopiaDesscription.png';
 import { Search, Heart, ShoppingBasket, User, X, Loader2 } from 'lucide-react'; // Thêm icon X và Loader
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -89,45 +90,50 @@ export default function Header() {
                 }`}
             >
                 {/* Header của Sheet */}
-                <div className="flex items-center justify-between p-4 border-b">
+                <div className="flex items-center justify-between border-b" style={{ padding: '16px' }}>
                     <h2 className="text-lg font-semibold text-gray-800">Tìm kiếm</h2>
                     <button
                         onClick={() => setIsSearchOpen(false)}
-                        className="p-1 hover:bg-gray-100 rounded-full transition"
+                        className=" hover:bg-gray-100 rounded-full transition cursor-pointer"
+                        style={{ padding: '4px' }}
                     >
                         <X size={24} />
                     </button>
                 </div>
 
                 {/* Input tìm kiếm */}
-                <div className="p-4 border-b">
+                <div className="border-b" style={{ padding: '16px' }}>
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                        <Search className="absolute left-1 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                         <input
                             type="text"
                             placeholder="Tìm sản phẩm..."
-                            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-300 transition-all"
+                            className="w-full pl-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-300 transition-all"
                             value={searchTerm}
                             onChange={handleSearch}
-                            autoFocus={isSearchOpen} // Tự động focus khi mở
+                            autoFocus={isSearchOpen}
+                            style={{ padding: '8px 16px 8px 24px' }}
+                            // Tự động focus khi mở
                         />
                     </div>
                 </div>
 
                 {/* Khu vực hiển thị kết quả */}
-                <div className="p-4 overflow-y-auto h-[calc(100%-130px)]">
+                <div className=" overflow-y-auto h-[calc(100%-130px)]" style={{ padding: '16px' }}>
                     {isSearching ? (
-                        <div className="flex justify-center items-center py-10 text-gray-500">
+                        <div className="flex justify-center items-center text-gray-500" style={{ padding: '40px' }}>
                             <Loader2 className="animate-spin mr-2" /> Đang tìm...
                         </div>
                     ) : (
                         <div className="space-y-4">
                             {searchTerm && searchResults.length === 0 && (
-                                <p className="text-center text-gray-500 mt-4">Không tìm thấy sản phẩm nào.</p>
+                                <p className="text-center text-gray-500" style={{ marginTop: '16px' }}>
+                                    Không tìm thấy sản phẩm nào.
+                                </p>
                             )}
 
                             {!searchTerm && (
-                                <div className="text-gray-400 text-sm text-center mt-4">
+                                <div className="text-gray-400 text-sm text-center" style={{ marginTop: '16px' }}>
                                     Nhập tên sản phẩm để tìm kiếm
                                 </div>
                             )}
@@ -135,7 +141,8 @@ export default function Header() {
                             {searchResults.map((product) => (
                                 <div
                                     key={product.id}
-                                    className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition group"
+                                    className="flex items-center gap-3 hover:bg-gray-50 rounded-lg cursor-pointer transition group"
+                                    style={{ padding: '8px' }}
                                     onClick={() => {
                                         navigate(`/san-pham/${product.id}`); // Điều hướng khi click
                                         setIsSearchOpen(false); // Đóng sheet
