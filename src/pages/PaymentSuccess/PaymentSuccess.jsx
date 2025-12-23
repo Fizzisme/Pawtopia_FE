@@ -8,17 +8,15 @@ export default function PaymentSuccess() {
     const calledApi = useRef(false); // Tránh gọi API 2 lần do React StrictMode
 
     useEffect(() => {
-        // Lấy dữ liệu cần thiết
-        const user = JSON.parse(localStorage.getItem('User'));
-        const productCarts = JSON.parse(localStorage.getItem('productCarts')) || [];
+        // Lấy gói dữ liệu đã được chuẩn bị kỹ càng bên trang Cart
+        // (Gói này chứa đủ AddressId, FullName, Items... y hệt logic Cart)
+        const tempOrderData = JSON.parse(localStorage.getItem('temp_order_data'));
 
-        // Nếu không có giỏ hàng (do f5 lại trang sau khi đã mua), coi như thành công
-        if (productCarts.length === 0) {
-            setStatus('success');
-            return;
-        }
-
-        if (!user) {
+        // Nếu không tìm thấy gói dữ liệu tạm (do vào trực tiếp link hoặc đã xóa)
+        if (!tempOrderData) {
+            console.error('Không tìm thấy dữ liệu đơn hàng tạm (temp_order_data)');
+            // Nếu muốn kỹ tính thì báo lỗi, còn không thì check giỏ hàng như cũ
+            // Ở đây con cho báo lỗi để đảm bảo toàn vẹn dữ liệu
             setStatus('fail');
             return;
         }
@@ -28,24 +26,9 @@ export default function PaymentSuccess() {
             calledApi.current = true;
 
             try {
-                const payload = {
-                    UserId: user.id,
-                    FullName: user.displayname,
-                    PhoneNumber: user.PhoneNumber,
-                    AddressLine: user.DetailAddress,
-                    Ward: user.Ward,
-                    Province: user.Province,
-                    District: user.District,
-
-                    // Quan trọng: Báo cho BE biết đây là Banking
-                    PaymentMethod: 'Banking',
-
-                    Items: productCarts.map((item) => ({
-                        ProductId: item.id.toString(),
-                        Quantity: item.quantity,
-                        Price: item.newPrice,
-                    })),
-                };
+                // Sử dụng nguyên xi cái payload đã lưu bên Cart
+                // Không cần chế biến lại, đảm bảo khớp 100% với Backend
+                const payload = tempOrderData;
 
                 // Gọi API tạo đơn
                 const response = await fetch('https://localhost:7216/api/payment/place-order', {
@@ -55,16 +38,17 @@ export default function PaymentSuccess() {
                 });
 
                 if (response.ok) {
-                    // Xóa giỏ hàng sau khi lưu DB thành công
+                    // Xóa sạch dữ liệu sau khi thành công
                     localStorage.removeItem('productCarts');
+                    localStorage.removeItem('temp_order_data'); // Xóa luôn cái tạm
                     setStatus('success');
                 } else {
                     const data = await response.json();
-                    console.error('Lỗi BE:', data);
+                    console.error('Lỗi BE trả về:', data);
                     setStatus('fail');
                 }
             } catch (error) {
-                console.error('Lỗi mạng:', error);
+                console.error('Lỗi mạng hoặc lỗi xử lý:', error);
                 setStatus('fail');
             }
         };

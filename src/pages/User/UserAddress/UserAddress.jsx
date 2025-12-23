@@ -76,32 +76,40 @@ export default function UserAddress() {
         });
     };
 
-    // --- GIAO DIỆN DANH SÁCH (Fix size cố định cho item) ---
+    // --- GIAO DIỆN DANH SÁCH ---
     if (!isEditing) {
         return (
-            <div className="flex justify-center p-6">
-                <div className="w-full max-w-4xl bg-white rounded-3xl shadow-xl p-8 border border-pink-50 h-auto">
-                    <div className="flex justify-between items-center mb-8 border-b border-pink-50 pb-6">
+            <div className="flex justify-center" style={{ padding: '24px' }}>
+                <div
+                    className="w-full max-w-4xl bg-white rounded-3xl shadow-xl border border-pink-50 h-auto"
+                    style={{ padding: '32px' }}
+                >
+                    <div
+                        className="flex justify-between items-center border-b border-pink-50"
+                        style={{ marginBottom: '32px', paddingBottom: '24px' }}
+                    >
                         <h2 className="text-2xl font-bold text-gray-800">Địa chỉ của tôi</h2>
                         <button
                             onClick={() => {
                                 setFormData({ id: '', fullName: userStorage.displayname || '', isDefault: false });
                                 setIsEditing(true);
                             }}
-                            className="bg-[#f4a7bb] hover:bg-pink-400 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all active:scale-95"
+                            className="bg-[#f4a7bb] hover:bg-pink-400 text-white font-bold rounded-xl shadow-lg transition-all active:scale-95"
+                            style={{ padding: '12px 32px' }}
                         >
                             + Thêm địa chỉ mới
                         </button>
                     </div>
 
-                    <div className="space-y-4">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                         {addresses.map((addr) => (
                             <div
                                 key={addr.id}
-                                className="min-h-[140px] p-6 rounded-2xl bg-[#fdfafb] border border-pink-50 flex justify-between items-center hover:bg-white hover:shadow-md transition-all"
+                                className="rounded-2xl bg-[#fdfafb] border border-pink-50 flex justify-between items-center hover:bg-white hover:shadow-md transition-all"
+                                style={{ minHeight: '140px', padding: '24px' }}
                             >
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-3">
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                    <div className="flex items-center" style={{ gap: '12px' }}>
                                         <span className="font-bold text-black text-lg">{addr.fullName}</span>
                                         <span className="text-gray-300">|</span>
                                         <span className="text-black font-medium">{addr.phoneNumber}</span>
@@ -113,13 +121,16 @@ export default function UserAddress() {
                                         </p>
                                     </div>
                                     {addr.isDefault && (
-                                        <span className="inline-block bg-pink-500 text-white font-bold text-[9px] px-2 py-0.5 rounded mt-2 uppercase">
+                                        <span
+                                            className="inline-block bg-pink-500 text-white font-bold text-[9px] rounded uppercase"
+                                            style={{ padding: '2px 8px', marginTop: '8px' }}
+                                        >
                                             Mặc định
                                         </span>
                                     )}
                                 </div>
-                                <div className="flex flex-col gap-3 text-right">
-                                    <div className="flex gap-4 justify-end">
+                                <div className="flex flex-col text-right" style={{ gap: '12px' }}>
+                                    <div className="flex justify-end" style={{ gap: '16px' }}>
                                         <button
                                             onClick={() => {
                                                 setFormData(addr);
@@ -153,7 +164,8 @@ export default function UserAddress() {
                                                     body: JSON.stringify(updated),
                                                 }).then(() => loadAddresses());
                                             }}
-                                            className="py-1.5 px-4 border border-black rounded-lg text-xs font-bold text-black hover:bg-gray-50 transition-all"
+                                            className="border border-black rounded-lg text-xs font-bold text-black hover:bg-gray-50 transition-all"
+                                            style={{ padding: '6px 16px' }}
                                         >
                                             Thiết lập mặc định
                                         </button>
@@ -167,54 +179,66 @@ export default function UserAddress() {
         );
     }
 
-    // --- GIAO DIỆN FORM (NÂNG CẤP ĐẸP HƠN) ---
+    // --- GIAO DIỆN FORM ---
     return (
-        <div
-            className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50"
-            style={{ padding: '100px' }}
-        >
-            <div className="w-full max-w-xl bg-white rounded-[32px] shadow-2xl px-10 py-7 border border-pink-100">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
+            <div
+                className="w-full max-w-xl bg-white rounded-[32px] shadow-2xl border border-pink-100"
+                style={{ padding: '10px 40px' }}
+            >
                 <h2 className="text-2xl font-bold text-gray-800 text-center uppercase tracking-tight">
                     {formData.id ? 'Cập nhật địa chỉ' : 'Thêm địa chỉ mới'}
                 </h2>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="space-y-4">
-                        <div className="space-y-1">
-                            <label className="text-[11px] font-bold text-gray-400 uppercase ml-2 tracking-widest">
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <label
+                                className="text-[11px] font-bold text-gray-400 uppercase tracking-widest"
+                                style={{ marginLeft: '8px' }}
+                            >
                                 Họ và Tên
                             </label>
                             <input
                                 type="text"
                                 placeholder="Nhập họ và tên"
-                                className="w-full bg-[#fafafa] border border-pink-100 px-5 py-4 rounded-xl outline-none focus:border-pink-300 focus:bg-white transition-all text-black font-bold"
+                                className="w-full bg-[#fafafa] border border-pink-100 rounded-xl outline-none focus:border-pink-300 focus:bg-white transition-all text-black font-bold"
+                                style={{ padding: '16px 20px' }}
                                 value={formData.fullName}
                                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                                 required
                             />
                         </div>
 
-                        <div className="space-y-1">
-                            <label className="text-[11px] font-bold text-gray-400 uppercase ml-2 tracking-widest">
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <label
+                                className="text-[11px] font-bold text-gray-400 uppercase tracking-widest"
+                                style={{ marginLeft: '8px' }}
+                            >
                                 Số điện thoại
                             </label>
                             <input
                                 type="text"
                                 placeholder="Nhập số điện thoại"
-                                className="w-full bg-[#fafafa] border border-pink-100 px-5 py-4 rounded-xl outline-none focus:border-pink-300 focus:bg-white transition-all text-black font-bold"
+                                className="w-full bg-[#fafafa] border border-pink-100 rounded-xl outline-none focus:border-pink-300 focus:bg-white transition-all text-black font-bold"
+                                style={{ padding: '16px 20px' }}
                                 value={formData.phoneNumber}
                                 onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
                                 required
                             />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <label className="text-[11px] font-bold text-gray-400 uppercase ml-2 tracking-widest">
+                        <div className="grid grid-cols-2" style={{ gap: '16px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                <label
+                                    className="text-[11px] font-bold text-gray-400 uppercase tracking-widest"
+                                    style={{ marginLeft: '8px' }}
+                                >
                                     Tỉnh / Thành
                                 </label>
                                 <select
-                                    className="w-full bg-[#fafafa] border border-pink-100 px-5 py-4 rounded-xl outline-none focus:border-pink-300 focus:bg-white cursor-pointer appearance-none text-black font-bold"
+                                    className="w-full bg-[#fafafa] border border-pink-100 rounded-xl outline-none focus:border-pink-300 focus:bg-white cursor-pointer appearance-none text-black font-bold"
+                                    style={{ padding: '16px 20px' }}
                                     value={formData.provinceId}
                                     onChange={handleProvinceChange}
                                     required
@@ -227,12 +251,16 @@ export default function UserAddress() {
                                     ))}
                                 </select>
                             </div>
-                            <div className="space-y-1">
-                                <label className="text-[11px] font-bold text-gray-400 uppercase ml-2 tracking-widest">
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                <label
+                                    className="text-[11px] font-bold text-gray-400 uppercase tracking-widest"
+                                    style={{ marginLeft: '8px' }}
+                                >
                                     Quận / Huyện
                                 </label>
                                 <select
-                                    className="w-full bg-[#fafafa] border border-pink-100 px-5 py-4 rounded-xl outline-none focus:border-pink-300 focus:bg-white cursor-pointer disabled:opacity-50 appearance-none text-black font-bold"
+                                    className="w-full bg-[#fafafa] border border-pink-100 rounded-xl outline-none focus:border-pink-300 focus:bg-white cursor-pointer disabled:opacity-50 appearance-none text-black font-bold"
+                                    style={{ padding: '16px 20px' }}
                                     value={formData.districtId}
                                     onChange={handleDistrictChange}
                                     required
@@ -248,12 +276,16 @@ export default function UserAddress() {
                             </div>
                         </div>
 
-                        <div className="space-y-1">
-                            <label className="text-[11px] font-bold text-gray-400 uppercase ml-2 tracking-widest">
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <label
+                                className="text-[11px] font-bold text-gray-400 uppercase tracking-widest"
+                                style={{ marginLeft: '8px' }}
+                            >
                                 Phường / Xã
                             </label>
                             <select
-                                className="w-full bg-[#fafafa] border border-pink-100 px-5 py-4 rounded-xl outline-none focus:border-pink-300 focus:bg-white appearance-none text-black font-bold"
+                                className="w-full bg-[#fafafa] border border-pink-100 rounded-xl outline-none focus:border-pink-300 focus:bg-white appearance-none text-black font-bold"
+                                style={{ padding: '16px 20px' }}
                                 value={formData.wardId}
                                 onChange={(e) =>
                                     setFormData({
@@ -274,20 +306,24 @@ export default function UserAddress() {
                             </select>
                         </div>
 
-                        <div className="space-y-1">
-                            <label className="text-[11px] font-bold text-gray-400 uppercase ml-2 tracking-widest">
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <label
+                                className="text-[11px] font-bold text-gray-400 uppercase tracking-widest"
+                                style={{ marginLeft: '8px' }}
+                            >
                                 Địa chỉ chi tiết
                             </label>
                             <textarea
                                 placeholder="Số nhà, tên đường..."
-                                className="w-full bg-[#fafafa] border border-pink-100 px-5 py-4 rounded-xl outline-none focus:border-pink-300 focus:bg-white transition-all text-black font-bold min-h-[100px]"
+                                className="w-full bg-[#fafafa] border border-pink-100 rounded-xl outline-none focus:border-pink-300 focus:bg-white transition-all text-black font-bold min-h-[100px]"
+                                style={{ padding: '16px 20px' }}
                                 value={formData.detailAddress}
                                 onChange={(e) => setFormData({ ...formData, detailAddress: e.target.value })}
                                 required
                             />
                         </div>
 
-                        <label className="flex items-center gap-3 cursor-pointer p-1">
+                        <label className="flex items-center cursor-pointer" style={{ gap: '12px', padding: '4px' }}>
                             <input
                                 type="checkbox"
                                 checked={formData.isDefault}
@@ -298,17 +334,19 @@ export default function UserAddress() {
                         </label>
                     </div>
 
-                    <div className="flex gap-4 pt-6">
+                    <div className="flex" style={{ gap: '16px', paddingTop: '24px' }}>
                         <button
                             type="button"
                             onClick={() => setIsEditing(false)}
-                            className="flex-1 py-4 font-bold text-gray-400 hover:text-black transition-colors uppercase text-xs tracking-widest"
+                            className="flex-1 font-bold text-gray-400 hover:text-black transition-colors uppercase text-xs tracking-widest"
+                            style={{ padding: '16px 0' }}
                         >
                             Hủy bỏ
                         </button>
                         <button
                             type="submit"
-                            className="flex-[2] bg-[#f4a7bb] hover:bg-pink-400 text-white font-bold py-4 rounded-2xl shadow-lg transition-all active:scale-95 text-sm uppercase tracking-widest"
+                            className="flex-[2] bg-[#f4a7bb] hover:bg-pink-400 text-white font-bold rounded-2xl shadow-lg transition-all active:scale-95 text-sm uppercase tracking-widest"
+                            style={{ padding: '16px 0' }}
                         >
                             Hoàn thành
                         </button>
