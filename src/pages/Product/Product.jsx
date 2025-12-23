@@ -65,7 +65,7 @@ export default function Product() {
                 <div className="flex flex-col md:flex-row gap-8">
                     {/* BÊN TRÁI: ẢNH SẢN PHẨM */}
                     <div className="w-full md:w-1/2" style={{ paddingLeft: '100px' }}>
-                        <div className="relative border  rounded-lg overflow-hidden">
+                        <div className="relative   rounded-lg overflow-hidden">
                             <img src={mainImage} alt="product" className="w-[100%%] object-cover" />
                         </div>
                         {/*    /!* Danh sách ảnh nhỏ (Thumbnails) *!/*/}
