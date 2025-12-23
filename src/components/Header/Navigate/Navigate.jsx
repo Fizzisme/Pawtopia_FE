@@ -36,7 +36,11 @@ export function Navigate() {
 
                 {/* CỬA HÀNG (DROPDOWN) */}
                 <NavigationMenuItem>
-                    <NavigationMenuTrigger className={transparentItem}> CỬA HÀNG </NavigationMenuTrigger>
+                    <NavigationMenuTrigger className={transparentItem}>
+                        <NavigationMenuLink asChild className={`${navigationMenuTriggerStyle()} ${transparentItem}`}>
+                            <Link to="/cua-hang">CỬA HÀNG</Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuTrigger>
                     <NavigationMenuContent>
                         <ul className="grid gap-2 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                             <ListItem href="/cua-hang/C1" title="Thức ăn hạt cho chó">
