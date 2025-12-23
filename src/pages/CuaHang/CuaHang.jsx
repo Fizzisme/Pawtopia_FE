@@ -5,6 +5,8 @@ import Help from '@/components/Help/Help.jsx';
 import { useState, useEffect } from 'react';
 import ProductCard from './ProductCard/ProductCard.jsx';
 import { useParams } from 'react-router-dom';
+import { ProductToolbar } from './components/product-toolbar.jsx';
+
 export default function CuaHang() {
     const productsPerPage = 24;
 
@@ -59,16 +61,55 @@ export default function CuaHang() {
         fetchProducts();
     }, [productsApiUrl]);
 
-    // 4. Tính toán phân trang dựa trên danh sách sản phẩm thực tế từ API
+    // 3. Filter
+    const defaultPriceFilter = { min: 0, max: 5_000_000 }
+    const [priceFilter, setPriceFilter] = useState(defaultPriceFilter);
+
+    const applyPriceFilter = (newPriceFilter) => {
+        setPriceFilter(newPriceFilter);
+        setCurrentPage(1);
+    };
+
+    const resetPriceFilter = () => {
+        setPriceFilter(defaultPriceFilter);
+        setCurrentPage(1);
+    };
+
+    // 4. Sort products
+    const [sortScheme, setSortScheme] = useState("price_asc")
+
+    products.sort((pLeft, pRight) => {
+        if (sortScheme === "price_asc")
+            return pLeft.newPrice - pRight.newPrice;
+        else if (sortScheme === "price_desc")
+            return pRight.newPrice - pLeft.newPrice;
+
+        return 0;
+    });
+
+    // 5. Calculate paging
+    const filteredProducts = products.filter((p) => {
+        const price = p.newPrice;
+        return price >= priceFilter.min && price <= priceFilter.max
+    });
+
     const indexOfLastProduct = currentPage * productsPerPage;
     const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-    const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
-    const totalPages = Math.ceil(products.length / productsPerPage);
+    const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
     return (
         <div className="flex flex-col min-h-screen">
             <Header />
             <CurrentPage />
+
+            <ProductToolbar
+                priceFilter={priceFilter}
+                onApply={applyPriceFilter}
+                onReset={resetPriceFilter}
+                onSortSchemeChange={setSortScheme}
+                sortScheme={sortScheme}
+            />
 
             <div className="w-full mx-auto" style={{ padding: '40px 100px' }}>
                 {/* Trạng thái Loading */}
