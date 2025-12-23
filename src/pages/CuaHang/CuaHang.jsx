@@ -18,10 +18,11 @@ export default function CuaHang() {
 
     // 2. Filter by `categoryId`
     const { id: paramCategoryId } = useParams();
-    const categoryId = paramCategoryId ?? ""
-    const productsApiUrl = categoryId == ""
-        ? "https://localhost:7216/api/Product/all"
-        : `https://localhost:7216/api/Product/by-category/${categoryId}`
+    const categoryId = paramCategoryId ?? '';
+    const productsApiUrl =
+        categoryId == ''
+            ? 'https://localhost:7216/api/Product/all'
+            : `https://localhost:7216/api/Product/by-category/${categoryId}`;
 
     useEffect(() => {
         // Kiểm tra điều kiện bên trong useEffect
@@ -41,6 +42,7 @@ export default function CuaHang() {
                     description: item.description,
                     name: item.name,
                     image: item.thumbImageLink || 'https://via.placeholder.com/400',
+                    images: item.imageUrls,
                     oldPrice: item.price,
                     newPrice: item.price || 0,
                     rating: 5,
@@ -62,7 +64,7 @@ export default function CuaHang() {
     }, [productsApiUrl]);
 
     // 3. Filter
-    const defaultPriceFilter = { min: 0, max: 5_000_000 }
+    const defaultPriceFilter = { min: 0, max: 5_000_000 };
     const [priceFilter, setPriceFilter] = useState(defaultPriceFilter);
 
     const applyPriceFilter = (newPriceFilter) => {
@@ -76,13 +78,11 @@ export default function CuaHang() {
     };
 
     // 4. Sort products
-    const [sortScheme, setSortScheme] = useState("price_asc")
+    const [sortScheme, setSortScheme] = useState('price_asc');
 
     products.sort((pLeft, pRight) => {
-        if (sortScheme === "price_asc")
-            return pLeft.newPrice - pRight.newPrice;
-        else if (sortScheme === "price_desc")
-            return pRight.newPrice - pLeft.newPrice;
+        if (sortScheme === 'price_asc') return pLeft.newPrice - pRight.newPrice;
+        else if (sortScheme === 'price_desc') return pRight.newPrice - pLeft.newPrice;
 
         return 0;
     });
@@ -90,7 +90,7 @@ export default function CuaHang() {
     // 5. Calculate paging
     const filteredProducts = products.filter((p) => {
         const price = p.newPrice;
-        return price >= priceFilter.min && price <= priceFilter.max
+        return price >= priceFilter.min && price <= priceFilter.max;
     });
 
     const indexOfLastProduct = currentPage * productsPerPage;
@@ -159,8 +159,9 @@ export default function CuaHang() {
                                     <button
                                         key={i}
                                         onClick={() => setCurrentPage(i + 1)}
-                                        className={`w-10 h-10 border rounded font-medium transition-colors ${currentPage === i + 1 ? 'bg-[#6a1f6e] text-white' : 'hover:bg-gray-50'
-                                            }`}
+                                        className={`w-10 h-10 border rounded font-medium transition-colors ${
+                                            currentPage === i + 1 ? 'bg-[#6a1f6e] text-white' : 'hover:bg-gray-50'
+                                        }`}
                                     >
                                         {i + 1}
                                     </button>

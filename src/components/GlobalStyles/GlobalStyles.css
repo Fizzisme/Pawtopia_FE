@@ -9,16 +9,9 @@
     --height-header: 110px;
     --height-navi: 50px;
 }
-
-/* 2. Reset CSS và áp dụng font chữ toàn cục */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    /* Áp dụng Quicksand cho tất cả các thẻ */
+*{
     font-family: 'Quicksand', sans-serif;
 }
-
 html {
     /* CSS chuẩn không dùng // để comment, phải dùng /* */
     /* font-size: 62.5%; */
@@ -30,6 +23,7 @@ body {
     color: var(--text-color);
     line-height: 1.5;
     user-select: none;
+
 }
 
 a {

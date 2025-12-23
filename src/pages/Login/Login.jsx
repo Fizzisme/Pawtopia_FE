@@ -72,6 +72,7 @@ export default function Login() {
             if (response.ok) {
                 const data = await response.json();
                 // Giả sử backend trả về data giống login thường
+                console.log(data);
                 localStorage.setItem('User', JSON.stringify(data.user || data));
                 alert('Đăng nhập Google thành công!');
                 navigate('/');

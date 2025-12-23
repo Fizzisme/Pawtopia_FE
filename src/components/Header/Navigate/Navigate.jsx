@@ -13,9 +13,8 @@ import { Link } from 'react-router-dom';
 const transparentItem =
     'bg-transparent hover:bg-transparent focus:bg-transparent ' +
     'data-[active]:bg-transparent data-[state=open]:bg-transparent ' +
-    'text-[#6a1f6e] hover:text-[#f5abc0] ' +
-    'data-[active]:text-[#f5abc0] data-[state=open]:text-[#f5abc0]';
-
+    'text-[#6a1f6e] font-extrabold hover:text-[#f5abc0] ' +
+    'data-[active]:text-[#f5abc0] data-[state=open]:text-[#f5abc0] hover:';
 export function Navigate() {
     return (
         <NavigationMenu>

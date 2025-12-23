@@ -7,6 +7,7 @@ export default function Product() {
     const { id } = useParams(); // 3. Lấy id từ URL (ví dụ: /san-pham/1 => id = "1")
     const [product, setProduct] = useState(null);
     const [mainImage, setMainImage] = useState('');
+    const [images, setImages] = useState([]);
     const [quantity, setQuantity] = useState(1);
 
     const productsStored = JSON.parse(localStorage.getItem('products'));
@@ -17,6 +18,7 @@ export default function Product() {
         if (foundProduct) {
             setProduct(foundProduct);
             setMainImage(foundProduct.image);
+            setImages(foundProduct.images);
 
             // Đặt ảnh đầu tiên làm ảnh chính
         }
@@ -66,23 +68,23 @@ export default function Product() {
                     {/* BÊN TRÁI: ẢNH SẢN PHẨM */}
                     <div className="w-full md:w-1/2" style={{ paddingLeft: '100px' }}>
                         <div className="relative   rounded-lg overflow-hidden">
-                            <img src={mainImage} alt="product" className="w-[100%%] object-cover" />
+                            <img src={mainImage} alt="product" className="w-[80%] object-cover" />
                         </div>
-                        {/*    /!* Danh sách ảnh nhỏ (Thumbnails) *!/*/}
-                        {/*    /!*<div className="grid grid-cols-5 gap-2" style={{ marginTop: '16px' }}>*!/*/}
-                        {/*    /!*    /!*{product.image.map((img, index) => (*!/*!/*/}
-                        {/*    /!*    /!*    <img*!/*!/*/}
-                        {/*    /!*    /!*        key={index}*!/*!/*/}
-                        {/*    /!*    /!*        src={img}*!/*!/*/}
-                        {/*    /!*    /!*        alt="thumb"*!/*!/*/}
-                        {/*    /!*    /!*        className={`border rounded cursor-pointer hover:border-pink-500 ${*!/*!/*/}
-                        {/*    /!*    /!*            mainImage === img ? 'border-pink-500' : ''*!/*!/*/}
-                        {/*    /!*    /!*        }`}*!/*!/*/}
-                        {/*    /!*    /!*        onClick={() => setMainImage(img)}*!/*!/*/}
-                        {/*    /!*    /!*    />*!/*!/*/}
-                        {/*    /!*    /!*))}*!/*!/*/}
-                        {/*    /!*    <img src={product?.image} className={} alt="" />*!/*/}
-                        {/*    /!*</div>*!/*/}
+                        {/* Danh sách ảnh nhỏ (Thumbnails) */}
+                        <div className="grid grid-cols-5 gap-2" style={{ marginTop: '16px' }}>
+                            {product?.images.map((img, index) => (
+                                <img
+                                    key={index}
+                                    src={img}
+                                    alt="thumb"
+                                    // className={`border rounded cursor-pointer hover:border-pink-500 ${
+                                    //     mainImage === img ? 'border-pink-500' : ''
+                                    // }`}
+                                    // onClick={() => setMainImage(img)}
+                                />
+                            ))}
+                            {/*<img src={product?.image} className={} alt="" />*/}
+                        </div>
                     </div>
 
                     {/* BÊN PHẢI: THÔNG TIN SẢN PHẨM */}

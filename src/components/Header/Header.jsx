@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'; // Import hooks
+import { useState, useEffect, useRef } from 'react'; // Import hooks
 import { Navigate } from '@/components/Header/Navigate/Navigate.jsx';
 
 import pawtopiaLogo from '@/assets/pawtopiaDesscription.png';
@@ -15,6 +15,7 @@ const MOCK_PRODUCTS = [
 ];
 
 export default function Header() {
+    const typingTimeoutRef = useRef(null);
     const navigate = useNavigate();
     const userStored = localStorage.getItem('User');
 
@@ -33,17 +34,39 @@ export default function Header() {
     const handleSearch = (e) => {
         const value = e.target.value;
         setSearchTerm(value);
+
+        if (value.trim() === '') {
+            setSearchResults([]);
+            setIsSearching(false);
+            if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+            return;
+        }
+
         setIsSearching(true);
 
-        // Giả lập delay tìm kiếm (debounce)
-        setTimeout(() => {
-            if (value.trim() === '') {
+        if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
+        }
+
+        typingTimeoutRef.current = setTimeout(async () => {
+            try {
+                const response = await fetch(
+                    `https://localhost:7216/api/products/search?keyword=${encodeURIComponent(value)}`,
+                );
+
+                if (response.ok) {
+                    const resData = await response.json();
+                    // --- SỬA Ở ĐÂY: Lấy trường .data từ object trả về ---
+                    setSearchResults(resData.data || []);
+                } else {
+                    setSearchResults([]);
+                }
+            } catch (error) {
+                console.error('Lỗi gọi API search:', error);
                 setSearchResults([]);
-            } else {
-                const results = MOCK_PRODUCTS.filter((item) => item.name.toLowerCase().includes(value.toLowerCase()));
-                setSearchResults(results);
+            } finally {
+                setIsSearching(false);
             }
-            setIsSearching(false);
         }, 500);
     };
 
@@ -138,7 +161,7 @@ export default function Header() {
                                 </div>
                             )}
 
-                            {searchResults.map((product) => (
+                            {searchResults?.map((product) => (
                                 <div
                                     key={product.id}
                                     className="flex items-center gap-3 hover:bg-gray-50 rounded-lg cursor-pointer transition group"
@@ -149,7 +172,7 @@ export default function Header() {
                                     }}
                                 >
                                     <img
-                                        src={product.image}
+                                        src={product.thumbImageLink}
                                         alt={product.name}
                                         className="w-12 h-12 rounded object-cover border"
                                     />

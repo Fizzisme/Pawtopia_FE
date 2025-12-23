@@ -1,165 +1,216 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Loader2 } from 'lucide-react';
 
 export default function UserProfile() {
-    const userStorage = JSON.parse(localStorage.getItem('User')) || {};
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState({
+    // 1. Lấy user từ LocalStorage
+    const [userStorage, setUserStorage] = useState(() => JSON.parse(localStorage.getItem('User')) || {});
+
+    // 2. State riêng cho phần Thông tin
+    const [profileData, setProfileData] = useState({
         firstName: userStorage.firstName || '',
         lastName: userStorage.lastName || '',
         email: userStorage.email || '',
-        oldPassword: '',
-        newPassword: '',
-        FullName: '',
     });
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
+    // 3. State riêng cho phần Mật khẩu
+    const [passData, setPassData] = useState({
+        oldPassword: '',
+        newPassword: '',
+    });
 
-    const handleSubmit = (e) => {
+    const [loadingInfo, setLoadingInfo] = useState(false);
+    const [loadingPass, setLoadingPass] = useState(false);
+
+    // --- HÀM XỬ LÝ 1: CẬP NHẬT THÔNG TIN ---
+    const handleUpdateInfo = async (e) => {
         e.preventDefault();
 
-        // Chỉ validate nếu user đang thay đổi mật khẩu
-        if (formData.newPassword) {
-            // if (!formData.oldPassword) {
-            //     alert('Vui lòng nhập mật khẩu hiện tại để đổi mật khẩu mới');
-            //     return;
-            // }
-            if (formData.newPassword.length < 6) {
-                alert('Mật khẩu mới phải ít nhất 6 ký tự');
-                return;
-            }
-            // TODO: Kiểm tra oldPassword có đúng không (gọi API)
-        }
-
-        // Chỉ validate firstName/lastName nếu user có nhập ít nhất 1 trong 2
-        if ((formData.firstName || formData.lastName) && (!formData.firstName || !formData.lastName)) {
-            alert('Vui lòng nhập đầy đủ họ và tên');
+        if (!profileData.firstName || !profileData.lastName) {
+            alert('Vui lòng nhập đầy đủ Họ và Tên');
             return;
         }
 
-        // Chỉ cập nhật FullName nếu có thay đổi firstName hoặc lastName
-        const updatedUser = {
-            ...userStorage,
-        };
+        setLoadingInfo(true);
+        try {
+            // --- GỌI API UPDATE PROFILE Ở ĐÂY ---
+            const payload = {
+                UserId: userStorage.id, // Giả sử có ID
+                displayName: `${profileData.firstName} ${profileData.lastName}`.trim(),
+            };
 
-        if (formData.firstName && formData.lastName) {
-            updatedUser.FullName = formData.firstName + ' ' + formData.lastName;
+            console.log('Gửi API Info:', payload);
+
+            const res = await fetch(`https://localhost:7216/api/user/update-profile`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+
+            if (res.ok) {
+                // Cập nhật lại LocalStorage để hiển thị ngay
+                const newUser = { ...userStorage, ...payload };
+                localStorage.setItem('User', JSON.stringify(newUser));
+                setUserStorage(newUser); // Update state để UI render lại
+                alert('Đã cập nhật thông tin thành công!');
+            } else {
+                alert('Lỗi khi cập nhật thông tin!');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Lỗi kết nối server');
+        } finally {
+            setLoadingInfo(false);
+        }
+    };
+
+    // --- HÀM XỬ LÝ 2: ĐỔI MẬT KHẨU ---
+    const handleChangePassword = async (e) => {
+        e.preventDefault();
+
+        if (!passData.oldPassword || !passData.newPassword) {
+            alert('Vui lòng nhập đầy đủ mật khẩu cũ và mới');
+            return;
         }
 
-        // Chỉ cập nhật các trường có giá trị
-        if (formData.newPassword) updatedUser.password = formData.newPassword;
+        if (passData.newPassword.length < 6) {
+            alert('Mật khẩu mới phải từ 6 ký tự trở lên');
+            return;
+        }
 
-        console.log('Updated fields:', updatedUser);
+        setLoadingPass(true);
+        try {
+            // --- GỌI API ĐỔI PASS Ở ĐÂY ---
+            const payload = {
+                userId: userStorage.id,
+                CurrentPassword: passData.oldPassword,
+                newPassword: passData.newPassword,
+            };
 
-        // Lưu vào localStorage
-        // localStorage.setItem('User', JSON.stringify(updatedUser));
+            console.log('Gửi API Pass:', payload);
 
-        // TODO: Gọi API cập nhật thông tin
+            const res = await fetch(`https://localhost:7216/api/user/change-password`, {
+                method: 'POST', // Hoặc POST tùy backend
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
 
-        alert('Cập nhật thông tin thành công!');
-
-        // Reset password fields sau khi lưu
-        setFormData((prev) => ({
-            ...prev,
-            oldPassword: '',
-            newPassword: '',
-        }));
+            if (res.ok) {
+                alert('Đổi mật khẩu thành công!');
+                setPassData({ oldPassword: '', newPassword: '' }); // Reset ô nhập
+            } else {
+                alert('Mật khẩu cũ không đúng hoặc lỗi hệ thống!');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Lỗi kết nối server');
+        } finally {
+            setLoadingPass(false);
+        }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div
-                className="bg-white border border-gray-200 rounded-lg"
-                style={{ padding: '24px', maxWidth: '900px', margin: '0 auto' }}
+        <div style={{ padding: '24px', maxWidth: '900px', margin: '0 auto' }}>
+            {/* --- PHẦN 1: THÔNG TIN TÀI KHOẢN --- */}
+            <form
+                onSubmit={handleUpdateInfo}
+                className="bg-white border border-gray-200 rounded-lg shadow-sm mb-8"
+                style={{ padding: '24px' }}
             >
-                <h2 className="text-2xl font-bold text-[#2D1B4D]" style={{ marginBottom: '24px' }}>
-                    Thông tin tài khoản
-                </h2>
-
-                {/* FORM INFO */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-600">Họ</label>
-                        <input
-                            type="text"
-                            name="firstName"
-                            value={formData.firstName}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-md"
-                            style={{ padding: '10px', marginTop: '6px' }}
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-600">Tên</label>
-                        <input
-                            type="text"
-                            name="lastName"
-                            value={formData.lastName}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-md"
-                            style={{ padding: '10px', marginTop: '6px' }}
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-600">Email</label>
-                        <input
-                            type="email"
-                            value={formData.email}
-                            disabled
-                            className="w-full border border-gray-300 rounded-md bg-gray-100"
-                            style={{ padding: '10px', marginTop: '6px' }}
-                        />
-                    </div>
-                </div>
-
-                {/* DIVIDER */}
-                <div className="border-t border-gray-200" style={{ margin: '32px 0' }} />
-
-                {/* PASSWORD */}
-                <h3 className="text-lg font-bold text-[#2D1B4D]" style={{ marginBottom: '16px' }}>
-                    Đổi mật khẩu
-                </h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <input
-                        type="password"
-                        name="oldPassword"
-                        value={formData.oldPassword}
-                        onChange={handleChange}
-                        placeholder="Mật khẩu hiện tại"
-                        className="w-full border border-gray-300 rounded-md"
-                        style={{ padding: '10px' }}
-                    />
-                    <input
-                        type="password"
-                        name="newPassword"
-                        value={formData.newPassword}
-                        onChange={handleChange}
-                        placeholder="Mật khẩu mới"
-                        className="w-full border border-gray-300 rounded-md"
-                        style={{ padding: '10px' }}
-                    />
-                </div>
-
-                {/* ACTION */}
-                <div className="flex justify-end" style={{ marginTop: '32px' }}>
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-bold text-[#2D1B4D]">Thông tin cá nhân</h2>
                     <button
                         type="submit"
-                        className="bg-[#f4a7bb] text-white font-bold rounded-lg hover:bg-pink-400 transition-colors cursor-pointer"
-                        style={{ padding: '12px 32px' }}
+                        disabled={loadingInfo}
+                        className="bg-[#f4a7bb] text-white font-bold rounded-lg hover:bg-pink-400 transition-colors flex items-center gap-2 disabled:opacity-50"
+                        style={{ padding: '8px 24px' }}
                     >
-                        Lưu thay đổi
+                        {loadingInfo && <Loader2 size={16} className="animate-spin" />}
+                        Lưu thông tin
                     </button>
                 </div>
-            </div>
-        </form>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-600 mb-1">Họ</label>
+                        <input
+                            type="text"
+                            value={profileData.firstName}
+                            onChange={(e) => setProfileData({ ...profileData, firstName: e.target.value })}
+                            className="w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-200 outline-none"
+                            style={{ padding: '10px' }}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-600 mb-1">Tên</label>
+                        <input
+                            type="text"
+                            value={profileData.lastName}
+                            onChange={(e) => setProfileData({ ...profileData, lastName: e.target.value })}
+                            className="w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-200 outline-none"
+                            style={{ padding: '10px' }}
+                        />
+                    </div>
+
+                    <div className="md:col-span-2">
+                        <label className="block text-sm font-semibold text-gray-600 mb-1">
+                            Email (Không thể thay đổi)
+                        </label>
+                        <input
+                            type="email"
+                            value={profileData.email}
+                            disabled
+                            className="w-full border border-gray-200 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed"
+                            style={{ padding: '10px' }}
+                        />
+                    </div>
+                </div>
+            </form>
+
+            {/* --- PHẦN 2: ĐỔI MẬT KHẨU --- */}
+            <form
+                onSubmit={handleChangePassword}
+                className="bg-white border border-gray-200 rounded-lg shadow-sm"
+                style={{ padding: '24px' }}
+            >
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-bold text-[#2D1B4D]">Đổi mật khẩu</h2>
+                    <button
+                        type="submit"
+                        disabled={loadingPass}
+                        className="bg-[#2D1B4D] text-white font-bold rounded-lg hover:bg-purple-900 transition-colors flex items-center gap-2 disabled:opacity-50"
+                        style={{ padding: '8px 24px' }}
+                    >
+                        {loadingPass && <Loader2 size={16} className="animate-spin" />}
+                        Lưu mật khẩu
+                    </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-600 mb-1">Mật khẩu hiện tại</label>
+                        <input
+                            type="password"
+                            value={passData.oldPassword}
+                            onChange={(e) => setPassData({ ...passData, oldPassword: e.target.value })}
+                            placeholder="••••••"
+                            className="w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-200 outline-none"
+                            style={{ padding: '10px' }}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-600 mb-1">Mật khẩu mới</label>
+                        <input
+                            type="password"
+                            value={passData.newPassword}
+                            onChange={(e) => setPassData({ ...passData, newPassword: e.target.value })}
+                            placeholder="Ít nhất 6 ký tự"
+                            className="w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-200 outline-none"
+                            style={{ padding: '10px' }}
+                        />
+                    </div>
+                </div>
+            </form>
+        </div>
     );
 }

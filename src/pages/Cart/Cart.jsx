@@ -3,6 +3,8 @@ import { X, Heart, Star, MapPin, ChevronRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header/Header.jsx';
 import { checkoutInputSchema } from '@/backend/checkout-input-schema';
+import { toast } from 'sonner';
+import { buildUrl } from '@/lib/utils.js';
 
 // --- COMPONENT CON: ITEM TRONG GIỎ HÀNG ---
 const CartItem = ({ item, updateQuantity, removeItem }) => {
@@ -134,7 +136,6 @@ export default function Cart() {
         setCartItems(updatedCart);
         localStorage.setItem('productCarts', JSON.stringify(updatedCart));
     };
-
     const handleRemoveItem = (id) => {
         const updatedCart = cartItems.filter((item) => item.id !== id);
         setCartItems(updatedCart);
@@ -154,12 +155,12 @@ export default function Cart() {
 
         // 1. Kiểm tra địa chỉ
         if (!selectedAddress) {
-            alert('Vui lòng thêm và chọn địa chỉ nhận hàng!');
+            toast('Vui lòng thêm và chọn địa chỉ nhận hàng!');
             return;
         }
 
         if (cartItems.length === 0) {
-            alert('Giỏ hàng trống');
+            toast('Giỏ hàng trống');
             return;
         }
 
@@ -215,16 +216,18 @@ export default function Cart() {
                 return res.json();
             })
             .then(() => {
-                alert('Đặt hàng thành công!');
+                toast('Đặt hàng thành công!');
                 localStorage.removeItem('productCarts');
                 navigate('/');
             })
             .catch((err) => {
                 console.error('Lỗi:', err);
                 // Hiển thị thông báo lỗi dễ hiểu hơn
-                alert('Lỗi đặt hàng: ' + err.message);
+                toast('Lỗi đặt hàng: ' + err.message);
             });
     };
+
+    // Sepay
 
     const [checkoutUrl, setCheckoutUrl] = useState('');
     const [fields, setFields] = useState({});
@@ -233,38 +236,14 @@ export default function Cart() {
     const fetchSepayPaymentData = useCallback(() => {
         if (paymentMethod !== 'banking') return;
 
-        if (selectedAddress) {
-            const tempOrderData = {
-                UserId: user.id,
-                AddressId: selectedAddress.id || selectedAddress.Id,
-
-                // Copy y chang đoạn "bọc lót" ở trên xuống đây
-                FullName: selectedAddress.fullName || selectedAddress.FullName || '',
-                PhoneNumber: selectedAddress.phoneNumber || selectedAddress.PhoneNumber || '',
-                AddressLine: selectedAddress.detailAddress || selectedAddress.DetailAddress || '',
-                Ward: selectedAddress.ward || selectedAddress.Ward || '',
-                District: selectedAddress.district || selectedAddress.District || '',
-                Province: selectedAddress.province || selectedAddress.Province || '',
-
-                PaymentMethod: 'Banking',
-                Items: cartItems.map((item) => ({
-                    ProductId: item.id.toString(),
-                    Quantity: item.quantity,
-                    Price: item.oldPrice,
-                })),
-            };
-            localStorage.setItem('temp_order_data', JSON.stringify(tempOrderData));
-        }
-
-        const successUrl = `${window.location.origin}/payment/success`;
         const payload = checkoutInputSchema.parse({
             order_invoice_number: transactionId,
             order_amount: finalTotal,
             currency: 'VND',
             order_description: `Thanh toan don hang ${transactionId}`,
-            success_url: successUrl,
-            error_url: `${window.location.origin}/payment/error`,
-            cancel_url: `${window.location.origin}/payment/cancel`,
+            success_url: buildUrl('/payment/success'),
+            error_url: buildUrl('/payment/error'),
+            cancel_url: buildUrl('/payment/cancel'),
         });
         fetch('/api/create-checkout', {
             method: 'POST',
@@ -276,14 +255,40 @@ export default function Cart() {
                 setCheckoutUrl(data.checkoutUrl);
                 setFields(data.fields);
             });
-    }, [finalTotal, paymentMethod, transactionId, selectedAddress, cartItems, user]);
+    }, [finalTotal, paymentMethod, transactionId]);
 
     useEffect(() => {
         fetchSepayPaymentData();
     }, [fetchSepayPaymentData]);
 
-    const randomProducts = JSON.parse(localStorage.getItem('products')) || [];
+    //
 
+    useEffect(() => {
+        if (!selectedAddress) return;
+
+        const tempOrderData = {
+            UserId: user.id,
+            AddressId: selectedAddress.id || selectedAddress.Id,
+
+            // Copy y chang đoạn "bọc lót" ở trên xuống đây
+            FullName: selectedAddress.fullName || selectedAddress.FullName || '',
+            PhoneNumber: selectedAddress.phoneNumber || selectedAddress.PhoneNumber || '',
+            AddressLine: selectedAddress.detailAddress || selectedAddress.DetailAddress || '',
+            Ward: selectedAddress.ward || selectedAddress.Ward || '',
+            District: selectedAddress.district || selectedAddress.District || '',
+            Province: selectedAddress.province || selectedAddress.Province || '',
+
+            PaymentMethod: 'Banking',
+            Items: cartItems.map((item) => ({
+                ProductId: item.id.toString(),
+                Quantity: item.quantity,
+                Price: item.oldPrice,
+            })),
+        };
+        localStorage.setItem('temp_order_data', JSON.stringify(tempOrderData));
+    }, [selectedAddress, cartItems, user]);
+
+    const randomProducts = JSON.parse(localStorage.getItem('products')) || [];
     return (
         <div>
             <Header />
@@ -423,16 +428,16 @@ export default function Cart() {
                                 >
                                     <span className="uppercase">Tổng cộng</span>
                                     <div className="text-2xl tracking-tighter text-pink-500">
-                                        {finalTotal.toLocaleString()} VND
+                                        {subTotal.toLocaleString()} VND
                                     </div>
                                 </div>
-                                {paymentMethod === 'banking' ? (
-                                    <div>
+                                {paymentMethod === 'banking' && cartItems?.length ? (
+                                    <form action={checkoutUrl} method="POST">
                                         {Object.keys(fields ?? {}).map((f) => (
                                             <input key={f} type="hidden" name={f} value={fields[f]} />
                                         ))}
-                                        <PayButton onClick={() => (window.location.href = checkoutUrl)} />
-                                    </div>
+                                        <PayButton type="submit" />
+                                    </form>
                                 ) : (
                                     <PayButton onClick={handleCheckoutCOD} />
                                 )}

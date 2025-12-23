@@ -13,11 +13,13 @@ import LienHe from '@/pages/LienHe/LienHe.jsx';
 import TuVan from '@/pages/TuVan/TuVan.jsx';
 import UserAddress from '@/pages/User/UserAddress/UserAddress.jsx';
 import UserOrder from '@/pages/User/UserOrder/UserOrder.jsx';
+import UserProduct from '@/pages/User/UserProduct/UserProduct.jsx';
 import UserProfile from '@/pages/User/UserProfile/UserProfile.jsx';
 import Cart from '@/pages/Cart/Cart.jsx';
 import Checkout from '@/pages/Checkout/Checkout.jsx';
 import InformationCheckout from '@/pages/InformationCheckout/InformationCheckout.jsx';
 import PaymentSuccess from '@/pages/PaymentSuccess/PaymentSuccess.jsx';
+import DetailOrder from '@/pages/DetailOrder/DetailOrder.jsx';
 function App() {
     return (
         <Routes>
@@ -36,11 +38,13 @@ function App() {
                 <Route path="dia-chi" element={<UserAddress />} />
                 <Route path="don-hang" element={<UserOrder />} />
                 <Route path="tai-khoan" element={<UserProfile />} />
+                <Route path="san-pham" element={<UserProduct />} />
             </Route>
             <Route path="/gio-hang" element={<Cart />} />
             <Route path="/thanh-toan" element={<Checkout />} />
             <Route path="/thong-tin-thanh-toan" element={<InformationCheckout />} />
             <Route path="/payment/success" element={<PaymentSuccess />} />
+            <Route path="/chi-tiet-don-hang/:orderid" element={<DetailOrder />} />
         </Routes>
     );
 }

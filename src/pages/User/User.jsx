@@ -2,12 +2,15 @@ import Header from '@/components/Header/Header.jsx';
 import CurrentPage from '@/components/CurrentPage/CurrentPage.jsx';
 import Help from '@/components/Help/Help.jsx';
 import Footer from '@/components/Footer/Footer.jsx';
-import { Package, MapPin, User as UserIcon, Wallet, LogOut } from 'lucide-react';
-import { useNavigate, useLocation, Outlet } from 'react-router-dom'; // Thêm useLocation, Outlet
+import { Package, MapPin, PackagePlus, User as UserIcon, Wallet, LogOut } from 'lucide-react';
+import { useNavigate, useLocation, Outlet } from 'react-router-dom';
+import Product from '@/pages/Product/Product.jsx'; // Thêm useLocation, Outlet
 
 export default function User() {
     const navigate = useNavigate();
     const location = useLocation(); // Lấy đường dẫn hiện tại
+
+    const user = JSON.parse(localStorage.getItem('User'));
 
     const handleLogout = () => {
         localStorage.removeItem('User');
@@ -44,18 +47,25 @@ export default function User() {
             path: 'tai-khoan',
             onClick: () => navigate('/user/tai-khoan'),
         },
+        user?.role === 'Admin' && {
+            icon: <PackagePlus size={28} />,
+            label: 'Sản Phẩm',
+            path: 'san-pham',
+            onClick: () => navigate('/user/san-pham'),
+        },
         {
             icon: <LogOut size={28} />,
             label: 'Đăng Xuất',
             path: 'logout',
             onClick: handleLogout,
         },
-    ];
-
+    ].filter(Boolean);
+    const gridCols = navItems.length === 5 ? 'grid-cols-2 md:grid-cols-5' : 'grid-cols-2 md:grid-cols-4';
     return (
         <div>
             <Header />
             <CurrentPage />
+
             <div className="relative">
                 {/* Background hình thú cưng */}
                 <div
@@ -69,7 +79,7 @@ export default function User() {
 
                 {/* Các thẻ Menu (Cards) */}
                 <div className="absolute" style={{ padding: '0 100px', bottom: '-100px', left: '0', right: '0' }}>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className={`grid grid-cols-2 ${gridCols} gap-4`}>
                         {navItems.map((item, index) => {
                             // Kiểm tra active
                             const active = item.path === 'logout' ? false : isActive(item.path);
