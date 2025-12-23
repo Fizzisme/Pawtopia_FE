@@ -1,115 +1,46 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { X, Heart, Star } from 'lucide-react';
+import { X, Heart, Star, MapPin, ChevronRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header/Header.jsx';
 import { checkoutInputSchema } from '@/backend/checkout-input-schema';
-// import { buildUrl } from '@/lib/utils'; // Có thể bỏ nếu dùng window.location.origin
 
-// --- COMPONENT CON: ITEM TRONG GIỎ HÀNG ---
+// --- COMPONENT CON: ITEM TRONG GIỎ HÀNG (GIỮ NGUYÊN) ---
 const CartItem = ({ item, updateQuantity, removeItem }) => {
     return (
-        <div
-            className="flex flex-col md:flex-row items-center border-b border-gray-100 last:border-0"
-            style={{ padding: '20px 0' }}
-        >
-            {/* Nút Xóa */}
-            <button
-                onClick={() => removeItem(item.id)}
-                className="text-gray-400 hover:text-red-500 transition-colors"
-                style={{ marginRight: '20px' }}
-                title="Xóa sản phẩm"
-            >
+        <div className="flex flex-col md:flex-row items-center border-b border-gray-100 last:border-0 py-5">
+            <button onClick={() => removeItem(item.id)} className="text-gray-400 hover:text-red-500 transition-colors mr-5">
                 <X size={18} />
             </button>
-
-            {/* Ảnh & Tên */}
             <div className="flex items-center flex-1 w-full md:w-auto">
-                <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-16 h-16 object-cover rounded border border-gray-200"
-                    style={{ marginRight: '16px' }}
-                />
+                <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded border border-gray-200 mr-4" />
                 <span className="text-[#2D1B4D] font-medium text-sm md:text-base">{item.name}</span>
             </div>
-
-            {/* Giá, Số lượng, Tạm tính */}
-            <div className="flex items-center justify-between w-full md:w-auto md:gap-12 mt-4 md:mt-0">
-                <span className="font-bold text-gray-700">{item.oldPrice.toLocaleString()} VND</span>
-
-                {/* Bộ đếm số lượng */}
+            <div className="flex items-center justify-between w-full md:w-auto md:gap-12 mt-4 md:mt-0 font-bold text-black">
+                <span>{item.oldPrice.toLocaleString()} VND</span>
                 <div className="flex border border-gray-300 rounded bg-white">
-                    <button
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="hover:bg-gray-100 text-gray-600"
-                        style={{ padding: '4px 8px' }}
-                    >
-                        -
-                    </button>
-                    <input
-                        type="text"
-                        value={item.quantity}
-                        readOnly
-                        className="w-8 text-center text-sm focus:outline-none"
-                    />
-                    <button
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="hover:bg-gray-100 text-gray-600"
-                        style={{ padding: '4px 8px' }}
-                    >
-                        +
-                    </button>
+                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="hover:bg-gray-100 text-gray-600 px-2">-</button>
+                    <input type="text" value={item.quantity} readOnly className="w-8 text-center text-sm focus:outline-none" />
+                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="hover:bg-gray-100 text-gray-600 px-2">+</button>
                 </div>
-
-                <span className="font-bold text-[#2D1B4D]">{(item.oldPrice * item.quantity).toLocaleString()} VND</span>
+                <span>{(item.oldPrice * item.quantity).toLocaleString()} VND</span>
             </div>
         </div>
     );
 };
 
-// --- COMPONENT CON: GỢI Ý SẢN PHẨM ---
+// --- COMPONENT CON: GỢI Ý SẢN PHẨM (GIỮ NGUYÊN) ---
 const RecommendCard = ({ product }) => {
     return (
         <div className="bg-white group">
-            <div className="relative border border-gray-100 overflow-hidden" style={{ marginBottom: '10px' }}>
-                {product.sale && (
-                    <span className="absolute top-2 right-2 bg-yellow-400 text-white text-[10px] font-bold px-2 py-1 rounded-full z-10">
-                        Giảm giá!
-                    </span>
-                )}
-                <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300"
-                />
+            <div className="relative border border-gray-100 overflow-hidden mb-2">
+                {product.sale && <span className="absolute top-2 right-2 bg-yellow-400 text-white text-[10px] font-bold px-2 py-1 rounded-full z-10">Giảm giá!</span>}
+                <img src={product.image} alt={product.name} className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300" />
             </div>
-            {/* Rating */}
-            <div className="flex gap-1" style={{ marginBottom: '5px' }}>
-                {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={12} fill={i < 5 ? 'none' : 'none'} stroke="#ccc" />
-                ))}
+            <h3 className="text-sm font-semibold text-[#2D1B4D] line-clamp-2 min-h-[40px] mb-2">{product.name}</h3>
+            <div className="flex items-center gap-1 mb-3">
+                <span className="font-bold text-gray-800">{Number(product.newPrice).toLocaleString()} VND</span>
             </div>
-            <h3
-                className="text-sm font-semibold text-[#2D1B4D] line-clamp-2 min-h-[40px]"
-                style={{ marginBottom: '8px' }}
-            >
-                {product.name}
-            </h3>
-            <div className="flex flex-col" style={{ marginBottom: '12px' }}>
-                <div className="flex items-center gap-1">
-                    <span className="font-bold text-gray-800">{Number(product.newPrice).toLocaleString()} VND</span>
-                    <span className="text-[10px] text-gray-500">VAT</span>
-                </div>
-            </div>
-            <button
-                className="w-full bg-[#f4a7bb] text-white font-bold text-xs rounded-full hover:bg-pink-500 transition-colors uppercase"
-                style={{ padding: '8px 0', marginBottom: '8px' }}
-            >
-                Mua Ngay
-            </button>
-            <div className="flex items-center gap-1 text-gray-400 text-xs cursor-pointer hover:text-pink-500">
-                <Heart size={12} /> <span>Yêu Thích</span>
-            </div>
+            <button className="w-full bg-[#f4a7bb] text-white font-bold text-xs rounded-full hover:bg-pink-500 transition-colors uppercase py-2">Mua Ngay</button>
         </div>
     );
 };
@@ -117,22 +48,33 @@ const RecommendCard = ({ product }) => {
 // --- COMPONENT CHÍNH: CART ---
 export default function Cart() {
     const navigate = useNavigate();
-
-    // 1. Tạo mã giao dịch tạm thời (Để gửi sang SePay)
-    // Mã này sẽ không đổi trừ khi F5 lại trang
+    const user = JSON.parse(localStorage.getItem('User'));
     const [transactionId] = useState(() => 'TRX-' + Date.now());
 
-    // 2. Khởi tạo State giỏ hàng
     const [cartItems, setCartItems] = useState(() => {
         const saved = localStorage.getItem('productCarts');
         return saved ? JSON.parse(saved) : [];
     });
 
-    const [shippingMethod, setShippingMethod] = useState('tietkiem');
-    const [paymentMethod, setPaymentMethod] = useState('cod');
-    const user = JSON.parse(localStorage.getItem('User'));
+    const [addresses, setAddresses] = useState([]);
+    const [selectedAddress, setSelectedAddress] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // 3. Logic cập nhật số lượng & Xóa
+    useEffect(() => {
+        if (user?.id) {
+            fetch(`https://localhost:7216/api/Address/my-addresses/${user.id}`)
+                .then(res => res.json())
+                .then(data => {
+                    setAddresses(data);
+                    const defaultAddr = data.find(a => a.isDefault);
+                    if (defaultAddr) setSelectedAddress(defaultAddr);
+                    else if (data.length > 0) setSelectedAddress(data[0]);
+                });
+        }
+    }, [user?.id]);
+
+    const [paymentMethod, setPaymentMethod] = useState('cod');
+
     const handleUpdateQuantity = (id, newQuantity) => {
         if (newQuantity < 1) return;
         const updatedCart = cartItems.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item));
@@ -146,39 +88,28 @@ export default function Cart() {
         localStorage.setItem('productCarts', JSON.stringify(updatedCart));
     };
 
-    // 4. Tính toán tiền
     const subTotal = cartItems.reduce((total, item) => total + item.oldPrice * item.quantity, 0);
-    const shippingFee = shippingMethod === 'tietkiem' ? 25000 : shippingMethod === 'hoatoc' ? 30000 : 0;
+    const shippingFee = 25000;
     const finalTotal = subTotal + shippingFee;
 
-    // 5. Xử lý Thanh toán COD (Tiền mặt)
     const handleCheckoutCOD = () => {
-        if (!user) {
-            navigate('/dang-nhap');
-            return;
-        }
-        if (!user?.PhoneNumber || !user?.DetailAddress) {
-            navigate('/user/dia-chi');
-            return;
-        }
-        if (cartItems.length === 0) {
-            alert('Giỏ hàng trống');
-            return;
-        }
+        if (!user) { navigate('/dang-nhap'); return; }
+        if (!selectedAddress) { alert("Vui lòng thêm địa chỉ nhận hàng"); return; }
+        if (cartItems.length === 0) { alert('Giỏ hàng trống'); return; }
 
         const payload = {
             UserId: user.id,
-            FullName: user.displayname,
-            PhoneNumber: user.PhoneNumber,
-            AddressLine: user.DetailAddress,
-            Ward: user.Ward,
-            Province: user.Province,
-            District: user.District,
-            PaymentMethod: 'COD', // Báo BE là COD
+            FullName: selectedAddress.fullName,
+            PhoneNumber: selectedAddress.phoneNumber,
+            AddressLine: selectedAddress.detailAddress,
+            Ward: selectedAddress.ward,
+            Province: selectedAddress.province,
+            District: selectedAddress.district,
+            PaymentMethod: 'COD',
             Items: cartItems.map((item) => ({
                 ProductId: item.id.toString(),
                 Quantity: item.quantity,
-                Price: item.newPrice,
+                Price: item.oldPrice,
             })),
         };
 
@@ -187,210 +118,193 @@ export default function Cart() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         })
-            .then((res) => {
-                if (!res.ok) throw new Error('Order failed');
-                return res.json();
-            })
-            .then((data) => {
+            .then(res => res.json())
+            .then(() => {
                 alert('Đặt hàng thành công!');
                 localStorage.removeItem('productCarts');
                 navigate('/');
-            })
-            .catch((err) => console.error(err));
+            });
     };
 
-    // 6. Xử lý Thanh toán Banking (SePay)
     const [checkoutUrl, setCheckoutUrl] = useState('');
     const [fields, setFields] = useState({});
 
     const fetchSepayPaymentData = useCallback(() => {
         if (paymentMethod !== 'banking') return;
-
-        // Tạo URL trả về: http://localhost:3000/payment/success
         const successUrl = `${window.location.origin}/payment/success`;
-
         const payload = checkoutInputSchema.parse({
-            order_invoice_number: transactionId, // Dùng mã TRX đã tạo
+            order_invoice_number: transactionId,
             order_amount: finalTotal,
             currency: 'VND',
             order_description: `Thanh toan don hang ${transactionId}`,
-
-            // Redirect về trang Success để gọi API lưu đơn
             success_url: successUrl,
             error_url: `${window.location.origin}/payment/error`,
             cancel_url: `${window.location.origin}/payment/cancel`,
         });
-
-        // Gọi API Proxy (NextJS/Backend phụ) để lấy link SePay
         fetch('/api/create-checkout', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                setCheckoutUrl(data.checkoutUrl);
-                setFields(data.fields);
-            })
-            .catch((err) => console.error('Lỗi lấy link thanh toán:', err));
+        }).then(res => res.json()).then(data => { setCheckoutUrl(data.checkoutUrl); setFields(data.fields); });
     }, [finalTotal, paymentMethod, transactionId]);
 
-    useEffect(() => {
-        fetchSepayPaymentData();
-    }, [fetchSepayPaymentData]);
+    useEffect(() => { fetchSepayPaymentData(); }, [fetchSepayPaymentData]);
 
-    // Mock data sản phẩm gợi ý
     const randomProducts = JSON.parse(localStorage.getItem('products')) || [];
 
     return (
         <div>
             <Header />
             <div className="bg-white min-h-screen font-sans text-gray-600">
-                <div className="container mx-auto" style={{ padding: '40px 15px' }}>
-                    {/* --- BẢNG GIỎ HÀNG --- */}
-                    <div className="border border-gray-200 rounded-sm" style={{ marginBottom: '40px' }}>
-                        <div
-                            className="hidden md:flex bg-white border-b border-gray-200 font-bold text-[#2D1B4D]"
-                            style={{ padding: '15px 20px' }}
-                        >
+                <div className="container mx-auto px-4 py-10">
+
+                    {/* ĐỊA CHỈ NHẬN HÀNG */}
+                    <div className="bg-white p-6 rounded-sm border border-gray-200 mb-8 relative shadow-sm">
+                        <div className="flex items-center gap-2 text-[#f4a7bb] mb-3">
+                            <MapPin size={20} />
+                            <span className="font-bold uppercase tracking-wider">Địa chỉ nhận hàng</span>
+                        </div>
+                        {selectedAddress ? (
+                            <div className="flex justify-between items-center">
+                                <div className="text-black">
+                                    <span className="font-bold text-lg">{selectedAddress.fullName} | {selectedAddress.phoneNumber}</span>
+                                    <p className="text-sm text-gray-600 mt-1 uppercase">
+                                        {selectedAddress.detailAddress}, {selectedAddress.ward}, {selectedAddress.district}, {selectedAddress.province}
+                                    </p>
+                                </div>
+                                <button onClick={() => setIsModalOpen(true)} className="text-blue-500 font-bold text-sm hover:underline flex items-center">
+                                    THAY ĐỔI <ChevronRight size={16} />
+                                </button>
+                            </div>
+                        ) : (
+                            <Link to="/user/dia-chi" className="text-blue-500 font-bold underline">+ Thêm địa chỉ nhận hàng</Link>
+                        )}
+                    </div>
+
+                    {/* GIỎ HÀNG */}
+                    <div className="border border-gray-200 rounded-sm mb-10 overflow-hidden">
+                        <div className="hidden md:flex bg-gray-50 border-b border-gray-200 font-bold text-[#2D1B4D] p-4 text-xs uppercase tracking-widest">
                             <div className="flex-1">Sản phẩm</div>
                             <div className="w-32 text-center">Giá</div>
                             <div className="w-32 text-center">Số lượng</div>
                             <div className="w-32 text-right">Tạm tính</div>
                         </div>
-
-                        <div style={{ padding: '0 20px' }}>
-                            {cartItems.length > 0 ? (
-                                cartItems.map((product) => (
-                                    <CartItem
-                                        key={product.id}
-                                        item={product}
-                                        updateQuantity={handleUpdateQuantity}
-                                        removeItem={handleRemoveItem}
-                                    />
-                                ))
-                            ) : (
-                                <p className="text-center py-10">Giỏ hàng trống</p>
-                            )}
+                        <div className="px-5">
+                            {cartItems.map((product) => (
+                                <CartItem key={product.id} item={product} updateQuantity={handleUpdateQuantity} removeItem={handleRemoveItem} />
+                            ))}
                         </div>
                     </div>
 
-                    {/* --- LAYOUT 2 CỘT --- */}
+                    {/* THANH TOÁN */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {/* CỘT TRÁI (Recommend) */}
                         <div className="md:col-span-2">
                             <h2 className="text-xl font-bold text-[#2D1B4D] border-b pb-2 mb-5">Bạn có thể thích...</h2>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                {randomProducts.map((p) => (
-                                    <RecommendCard key={p.id} product={p} />
-                                ))}
+                                {randomProducts.slice(0, 3).map((p) => <RecommendCard key={p.id} product={p} />)}
                             </div>
                         </div>
 
-                        {/* CỘT PHẢI: THANH TOÁN */}
                         <div className="md:col-span-1">
-                            <div className="border border-gray-200 rounded-sm">
-                                <h2
-                                    className="text-lg font-bold text-[#2D1B4D] border-b border-gray-200 bg-gray-50"
-                                    style={{ padding: '8px' }}
-                                >
-                                    Tổng cộng giỏ hàng
-                                </h2>
-
-                                <div style={{ padding: '20px' }}>
-                                    {/* Tạm tính */}
-                                    <div className="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">
-                                        <span className="font-bold text-gray-600">Tạm tính</span>
-                                        <span className="font-bold text-gray-500">{subTotal.toLocaleString()} VND</span>
-                                    </div>
-
-                                    {/* Vận chuyển */}
-
-                                    {/* Phương thức thanh toán */}
-                                    <div className="border-b border-gray-100 pb-4 mb-4">
-                                        <span className="font-bold text-gray-600 block mb-2">
-                                            Phương thức thanh toán
-                                        </span>
-                                        <div className="space-y-3">
-                                            {/* COD */}
-                                            <label className="flex items-start gap-2 cursor-pointer">
-                                                <input
-                                                    type="radio"
-                                                    name="payment"
-                                                    checked={paymentMethod === 'cod'}
-                                                    onChange={() => setPaymentMethod('cod')}
-                                                    className="accent-pink-500 mt-1"
-                                                />
-                                                <div className="text-sm">
-                                                    <b>Thanh toán tiền mặt</b>
-                                                    <p className="text-xs text-gray-500">
-                                                        Thanh toán khi nhận hàng (COD)
-                                                    </p>
-                                                </div>
-                                            </label>
-
-                                            {/* Banking */}
-                                            <label className="flex items-start gap-2 cursor-pointer">
-                                                <input
-                                                    type="radio"
-                                                    name="payment"
-                                                    checked={paymentMethod === 'banking'}
-                                                    onChange={() => setPaymentMethod('banking')}
-                                                    className="accent-pink-500 mt-1"
-                                                />
-                                                <div className="text-sm">
-                                                    <b>Smart Banking (SePay)</b>
-                                                    <p className="text-xs text-gray-500">
-                                                        Quét mã QR - Tự động xác nhận
-                                                    </p>
-                                                </div>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    {/* Tổng tiền */}
-                                    <div className="flex justify-between items-start mb-5">
-                                        <span className="font-bold text-gray-600">Tổng</span>
-                                        <div className="text-right">
-                                            <div className="font-bold text-gray-800 text-lg">
-                                                {subTotal.toLocaleString()} VND
-                                            </div>
-                                            <span className="text-xs font-normal text-gray-500">(Đã bao gồm VAT)</span>
-                                        </div>
-                                    </div>
-
-                                    {/* Nút thanh toán */}
-                                    {paymentMethod === 'banking' ? (
-                                        // Form ẩn để submit sang SePay
-                                        <form action={checkoutUrl} method="POST">
-                                            {Object.keys(fields ?? {}).map((field) => (
-                                                <input key={field} type="hidden" name={field} value={fields[field]} />
-                                            ))}
-                                            <PayButton type="submit" />
-                                        </form>
-                                    ) : (
-                                        // Nút bấm cho COD
-                                        <PayButton onClick={handleCheckoutCOD} />
-                                    )}
+                            <div className="border border-gray-200 rounded-sm p-6 bg-white shadow-sm font-bold text-black">
+                                <h2 className="text-lg uppercase text-center border-b border-gray-100 pb-3 mb-5">Hóa đơn</h2>
+                                <div className="flex justify-between mb-4 uppercase text-xs">
+                                    <span>Tạm tính</span>
+                                    <span>{subTotal.toLocaleString()} VND</span>
                                 </div>
+                                <div className="mb-6">
+                                    <span className="block mb-3 text-xs uppercase tracking-tighter">Thanh toán bằng:</span>
+                                    <div className="space-y-2 font-bold text-black">
+                                        <label className="flex items-center gap-2 cursor-pointer p-2 rounded-md hover:bg-gray-50 transition-all border border-transparent hover:border-black">
+                                            <input type="radio" checked={paymentMethod === 'cod'} onChange={() => setPaymentMethod('cod')} className="accent-black w-4 h-4" />
+                                            <span className="text-sm">TIỀN MẶT (COD)</span>
+                                        </label>
+                                        <label className="flex items-center gap-2 cursor-pointer p-2 rounded-md hover:bg-gray-50 transition-all border border-transparent hover:border-black">
+                                            <input type="radio" checked={paymentMethod === 'banking'} onChange={() => setPaymentMethod('banking')} className="accent-black w-4 h-4" />
+                                            <span className="text-sm">SMART BANKING</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div className="flex justify-between items-center mb-8 border-t-2 border-black pt-4">
+                                    <span className="uppercase">Tổng cộng</span>
+                                    <div className="text-2xl tracking-tighter text-pink-500">{finalTotal.toLocaleString()} VND</div>
+                                </div>
+                                {paymentMethod === 'banking' ? (
+                                    <form action={checkoutUrl} method="POST">
+                                        {Object.keys(fields ?? {}).map((f) => <input key={f} type="hidden" name={f} value={fields[f]} />)}
+                                        <PayButton type="submit" />
+                                    </form>
+                                ) : (
+                                    <PayButton onClick={handleCheckoutCOD} />
+                                )}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* --- POP-UP CHỌN ĐỊA CHỈ (TO RỘNG - DÀI THEO CHIỀU DỌC) --- */}
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-[999] p-4">
+                    {/* Max width to rộng (4xl) và chiều cao tự động co giãn tối đa 85% màn hình */}
+                    <div className="bg-white w-full max-w-4xl border-2 border-black shadow-[15px_15px_0px_0px_rgba(0,0,0,1)] rounded-none overflow-hidden flex flex-col max-h-[85vh]">
+
+                        {/* Header viền đen chữ đậm */}
+                        <div className="p-6 border-b-2 border-black flex justify-between items-center bg-[#fafafa]">
+                            <h3 className="font-bold text-black uppercase tracking-widest text-2xl">Danh sách địa chỉ nhận hàng</h3>
+                            <button onClick={() => setIsModalOpen(false)} className="text-black border-2 border-black p-1 hover:bg-gray-200 transition-colors"><X size={28} /></button>
+                        </div>
+
+                        {/* List nội dung - Không dùng Flex dàn trải, cho phép cuộn dọc */}
+                        <div className="p-8 overflow-y-auto bg-white flex-1 scrollbar-thin scrollbar-thumb-black">
+                            {addresses.length > 0 ? (
+                                addresses.map(addr => (
+                                    <div
+                                        key={addr.id}
+                                        onClick={() => { setSelectedAddress(addr); setIsModalOpen(false); }}
+                                        className={`block w-full p-6 border-2 mb-6 cursor-pointer transition-all hover:bg-gray-50 ${selectedAddress?.id === addr.id ? 'border-black bg-pink-50' : 'border-gray-200'}`}
+                                    >
+                                        {/* Nội dung dàn khối từ trên xuống */}
+                                        <div className="text-black">
+                                            <div className="flex items-center gap-4 mb-2">
+                                                <span className="font-bold text-2xl uppercase tracking-tighter">{addr.fullName}</span>
+                                                <span className="h-6 w-0.5 bg-gray-300"></span>
+                                                <span className="font-bold text-xl text-gray-700">{addr.phoneNumber}</span>
+                                            </div>
+                                            <p className="text-lg font-medium text-gray-800 uppercase leading-relaxed">
+                                                {addr.detailAddress}, {addr.ward}, {addr.district}, {addr.province}
+                                            </p>
+                                            {addr.isDefault && (
+                                                <span className="bg-black text-white text-[10px] px-3 py-1 font-bold mt-3 inline-block uppercase tracking-widest">
+                                                    Mặc định
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-center py-20 font-bold uppercase text-gray-400 text-xl tracking-widest italic">Bố chưa có địa chỉ nào hết!</p>
+                            )}
+                        </div>
+
+                        {/* Footer nút to rõ */}
+                        <div className="p-6 bg-[#fafafa] border-t-2 border-black flex justify-between items-center">
+                            <button onClick={() => navigate('/user/dia-chi')} className="bg-white border-2 border-black font-bold px-10 py-4 text-sm uppercase hover:bg-black hover:text-white transition-all shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-none active:translate-x-1 active:translate-y-1">
+                                Chỉnh sửa địa chỉ
+                            </button>
+                            <button onClick={() => setIsModalOpen(false)} className="text-black font-black uppercase text-lg underline hover:text-pink-500 transition-colors">Đóng cửa sổ</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
 
-// Button Component
 function PayButton({ type, onClick }) {
     return (
-        <button
-            className="w-full cursor-pointer bg-[#f4a7bb] text-white font-bold text-lg rounded-xl hover:bg-pink-400 transition-colors shadow-sm uppercase py-3"
-            type={type}
-            onClick={onClick}
-        >
-            Thanh toán
+        <button className="w-full bg-[#f4a7bb] border-2 border-black text-black font-bold text-xl py-5 uppercase shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none active:translate-x-1 active:translate-y-1 transition-all cursor-pointer italic" type={type} onClick={onClick}>
+            Xác nhận thanh toán!
         </button>
     );
 }
