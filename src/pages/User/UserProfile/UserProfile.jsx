@@ -8,10 +8,6 @@ export default function UserProfile() {
         firstName: userStorage.firstName || '',
         lastName: userStorage.lastName || '',
         email: userStorage.email || '',
-        PhoneNumber: userStorage.PhoneNumber || '',
-        DetailAddress: userStorage.DetailAddress || '',
-        Province: userStorage.Province || '',
-        District: userStorage.District || '',
         oldPassword: '',
         newPassword: '',
         FullName: '',
@@ -57,10 +53,6 @@ export default function UserProfile() {
         }
 
         // Chỉ cập nhật các trường có giá trị
-        if (formData.PhoneNumber) updatedUser.PhoneNumber = formData.PhoneNumber;
-        if (formData.DetailAddress) updatedUser.DetailAddress = formData.DetailAddress;
-        if (formData.Province) updatedUser.Province = formData.Province;
-        if (formData.District) updatedUser.District = formData.District;
         if (formData.newPassword) updatedUser.password = formData.newPassword;
 
         console.log('Updated fields:', updatedUser);
@@ -125,62 +117,6 @@ export default function UserProfile() {
                             className="w-full border border-gray-300 rounded-md bg-gray-100"
                             style={{ padding: '10px', marginTop: '6px' }}
                         />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-600">Số điện thoại</label>
-                        <input
-                            type="text"
-                            name="PhoneNumber"
-                            value={formData.PhoneNumber}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-md"
-                            style={{ padding: '10px', marginTop: '6px' }}
-                        />
-                    </div>
-
-                    <div className="md:col-span-2">
-                        <label className="block text-sm font-semibold text-gray-600">Địa chỉ</label>
-                        <input
-                            type="text"
-                            name="DetailAddress"
-                            value={formData.DetailAddress}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-md"
-                            style={{ padding: '10px', marginTop: '6px' }}
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-600">Tỉnh / Thành phố</label>
-                        <select
-                            name="Province"
-                            value={formData.Province}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-md"
-                            style={{ padding: '10px', marginTop: '6px' }}
-                        >
-                            <option value="">-- Chọn --</option>
-                            <option value="HCM">Hồ Chí Minh</option>
-                            <option value="HN">Hà Nội</option>
-                            <option value="DN">Đà Nẵng</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-600">Quận / Huyện</label>
-                        <select
-                            name="District"
-                            value={formData.District}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-md"
-                            style={{ padding: '10px', marginTop: '6px' }}
-                        >
-                            <option value="">-- Chọn --</option>
-                            <option value="Q1">Quận 1</option>
-                            <option value="Q3">Quận 3</option>
-                            <option value="Q7">Quận 7</option>
-                        </select>
                     </div>
                 </div>
 

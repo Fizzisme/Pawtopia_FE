@@ -17,6 +17,7 @@ import UserProfile from '@/pages/User/UserProfile/UserProfile.jsx';
 import Cart from '@/pages/Cart/Cart.jsx';
 import Checkout from '@/pages/Checkout/Checkout.jsx';
 import InformationCheckout from '@/pages/InformationCheckout/InformationCheckout.jsx';
+import PaymentSuccess from '@/pages/PaymentSuccess/PaymentSuccess.jsx';
 function App() {
     return (
         <Routes>
@@ -38,6 +39,7 @@ function App() {
             <Route path="/gio-hang" element={<Cart />} />
             <Route path="/thanh-toan" element={<Checkout />} />
             <Route path="/thong-tin-thanh-toan" element={<InformationCheckout />} />
+            <Route path="/payment/success" element={<PaymentSuccess />} />
         </Routes>
     );
 }

@@ -3,16 +3,16 @@ import { X, Heart, Star } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header/Header.jsx';
 import { checkoutInputSchema } from '@/backend/checkout-input-schema';
-import { buildUrl } from '@/lib/utils';
+// import { buildUrl } from '@/lib/utils'; // Có thể bỏ nếu dùng window.location.origin
 
-// Component con: 1 Dòng sản phẩm trong giỏ hàng
+// --- COMPONENT CON: ITEM TRONG GIỎ HÀNG ---
 const CartItem = ({ item, updateQuantity, removeItem }) => {
     return (
         <div
             className="flex flex-col md:flex-row items-center border-b border-gray-100 last:border-0"
             style={{ padding: '20px 0' }}
         >
-            {/* Nút Xóa: Gọi hàm removeItem từ cha truyền xuống */}
+            {/* Nút Xóa */}
             <button
                 onClick={() => removeItem(item.id)}
                 className="text-gray-400 hover:text-red-500 transition-colors"
@@ -67,7 +67,7 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
     );
 };
 
-// Component con: Thẻ sản phẩm gợi ý (Bạn có thể thích)
+// --- COMPONENT CON: GỢI Ý SẢN PHẨM ---
 const RecommendCard = ({ product }) => {
     return (
         <div className="bg-white group">
@@ -114,121 +114,57 @@ const RecommendCard = ({ product }) => {
     );
 };
 
+// --- COMPONENT CHÍNH: CART ---
 export default function Cart() {
-    // 1. Khởi tạo State từ localStorage
+    const navigate = useNavigate();
+
+    // 1. Tạo mã giao dịch tạm thời (Để gửi sang SePay)
+    // Mã này sẽ không đổi trừ khi F5 lại trang
+    const [transactionId] = useState(() => 'TRX-' + Date.now());
+
+    // 2. Khởi tạo State giỏ hàng
     const [cartItems, setCartItems] = useState(() => {
         const saved = localStorage.getItem('productCarts');
         return saved ? JSON.parse(saved) : [];
     });
-    const navigate = useNavigate();
-    const user = JSON.parse(localStorage.getItem('User'));
+
     const [shippingMethod, setShippingMethod] = useState('tietkiem');
+    const [paymentMethod, setPaymentMethod] = useState('cod');
+    const user = JSON.parse(localStorage.getItem('User'));
 
-    // 2. Logic cập nhật số lượng
+    // 3. Logic cập nhật số lượng & Xóa
     const handleUpdateQuantity = (id, newQuantity) => {
-        if (newQuantity < 1) return; // Không cho giảm dưới 1
-
+        if (newQuantity < 1) return;
         const updatedCart = cartItems.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item));
         setCartItems(updatedCart);
-        // Cập nhật lại localStorage nếu cần
         localStorage.setItem('productCarts', JSON.stringify(updatedCart));
     };
 
-    // 3. Logic xóa sản phẩm
     const handleRemoveItem = (id) => {
         const updatedCart = cartItems.filter((item) => item.id !== id);
         setCartItems(updatedCart);
         localStorage.setItem('productCarts', JSON.stringify(updatedCart));
     };
 
-    // 4. TÍNH TOÁN TỔNG TIỀN (LOGIC BẠN CẦN)
-    // Tính tổng tạm tính (Giá * Số lượng của tất cả sp)
-    const subTotal = cartItems.reduce((total, item) => {
-        return total + item.oldPrice * item.quantity;
-    }, 0);
-
-    // Tính phí ship
+    // 4. Tính toán tiền
+    const subTotal = cartItems.reduce((total, item) => total + item.oldPrice * item.quantity, 0);
     const shippingFee = shippingMethod === 'tietkiem' ? 25000 : shippingMethod === 'hoatoc' ? 30000 : 0;
-
-    // Tính tổng thanh toán cuối cùng
     const finalTotal = subTotal + shippingFee;
 
-    // 5. Payment method - COD
-    const navigate = useNavigate();
-    const user = localStorage.getItem('User');
-
-    const handleCheckout = () => {
+    // 5. Xử lý Thanh toán COD (Tiền mặt)
+    const handleCheckoutCOD = () => {
         if (!user) {
             navigate('/dang-nhap');
             return;
         }
-
-        // Đã đăng nhập nhưng thiếu thông tin
-        if (!user?.phoneNumber || !user?.detailAddress) {
-            navigate('/user/dia-chi');
-            return;
-        }
-
-        // Đủ điều kiện thanh toán
-        navigate('/thanh-toan');
-    };
-
-    // 5. Payment method - Banking
-    const [paymentMethod, setPaymentMethod] = useState('cod');
-
-    // Sepay
-    const [checkoutUrl, setCheckoutUrl] = useState('')
-    const [fields, setFields] = useState({})
-
-    const fetchSepayPaymentData = useCallback(() => {
-        if (paymentMethod !== "banking") return
-
-        // TODO: `orderId` can only be in correct guid format!
-        const orderId = `ORDER-${Date.now()}`;
-
-        // Schema defined at `src/backend/checkout-input-schema`
-        const payload = checkoutInputSchema.parse({
-            order_invoice_number: orderId,
-            order_amount: finalTotal,
-            currency: 'VND',
-            order_description: 'Pawtopia order payment', // TODO
-            success_url: buildUrl(`/payment/success/${orderId}`),
-            error_url: buildUrl(`/payment/error/${orderId}`),
-            cancel_url: buildUrl(`/payment/cancel/${orderId}`),
-        });
-
-        fetch('/api/create-checkout', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-        })
-            .then(res => res.json())
-            .then(data => {
-                setCheckoutUrl(data.checkoutUrl)
-                setFields(data.fields)
-            })
-    }, [finalTotal, paymentMethod])
-
-    useEffect(() => {
-        const allProductsData = JSON.parse(localStorage.getItem('products')) || [];
-
-        setRandomProducts([...allProductsData].sort(() => Math.random() - 0.5).slice(0, 3));
-    }, []);
-
-    const [paymentMethod, setPaymentMethod] = useState('cod');
-    const handleCheckout = () => {
-        if (!user) {
-            navigate('/dang-nhap');
-            return;
-        }
-
-        // Đã đăng nhập nhưng thiếu thông tin
         if (!user?.PhoneNumber || !user?.DetailAddress) {
             navigate('/user/dia-chi');
             return;
         }
-
-        const productCarts = JSON.parse(localStorage.getItem('productCarts')) || [];
+        if (cartItems.length === 0) {
+            alert('Giỏ hàng trống');
+            return;
+        }
 
         const payload = {
             UserId: user.id,
@@ -238,38 +174,80 @@ export default function Cart() {
             Ward: user.Ward,
             Province: user.Province,
             District: user.District,
-
-            Items: productCarts.map((item) => ({
+            PaymentMethod: 'COD', // Báo BE là COD
+            Items: cartItems.map((item) => ({
                 ProductId: item.id.toString(),
                 Quantity: item.quantity,
                 Price: item.newPrice,
             })),
         };
 
-        console.log('PAYLOAD >>>', payload);
-
         fetch('https://localhost:7216/api/payment/place-order', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload), // ✅ ĐÚNG
+            body: JSON.stringify(payload),
         })
             .then((res) => {
-                if (!res.ok) throw new Error('Place order failed');
+                if (!res.ok) throw new Error('Order failed');
                 return res.json();
             })
             .then((data) => {
-                console.log('ORDER SUCCESS', data);
+                alert('Đặt hàng thành công!');
+                localStorage.removeItem('productCarts');
+                navigate('/');
             })
             .catch((err) => console.error(err));
-
-        //  navigate('/thanh-toan');
     };
+
+    // 6. Xử lý Thanh toán Banking (SePay)
+    const [checkoutUrl, setCheckoutUrl] = useState('');
+    const [fields, setFields] = useState({});
+
+    const fetchSepayPaymentData = useCallback(() => {
+        if (paymentMethod !== 'banking') return;
+
+        // Tạo URL trả về: http://localhost:3000/payment/success
+        const successUrl = `${window.location.origin}/payment/success`;
+
+        const payload = checkoutInputSchema.parse({
+            order_invoice_number: transactionId, // Dùng mã TRX đã tạo
+            order_amount: finalTotal,
+            currency: 'VND',
+            order_description: `Thanh toan don hang ${transactionId}`,
+
+            // Redirect về trang Success để gọi API lưu đơn
+            success_url: successUrl,
+            error_url: `${window.location.origin}/payment/error`,
+            cancel_url: `${window.location.origin}/payment/cancel`,
+        });
+
+        // Gọi API Proxy (NextJS/Backend phụ) để lấy link SePay
+        fetch('/api/create-checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                setCheckoutUrl(data.checkoutUrl);
+                setFields(data.fields);
+            })
+            .catch((err) => console.error('Lỗi lấy link thanh toán:', err));
+    }, [finalTotal, paymentMethod, transactionId]);
+
+    useEffect(() => {
+        fetchSepayPaymentData();
+    }, [fetchSepayPaymentData]);
+
+    // Mock data sản phẩm gợi ý
+    const randomProducts = JSON.parse(localStorage.getItem('products')) || [];
+
     return (
         <div>
             <Header />
             <div className="bg-white min-h-screen font-sans text-gray-600">
                 <div className="container mx-auto" style={{ padding: '40px 15px' }}>
-                    {/* --- PHẦN 1: BẢNG GIỎ HÀNG --- */}
+                    {/* --- BẢNG GIỎ HÀNG --- */}
                     <div className="border border-gray-200 rounded-sm" style={{ marginBottom: '40px' }}>
                         <div
                             className="hidden md:flex bg-white border-b border-gray-200 font-bold text-[#2D1B4D]"
@@ -297,16 +275,11 @@ export default function Cart() {
                         </div>
                     </div>
 
-                    {/* --- PHẦN 2: LAYOUT 2 CỘT --- */}
+                    {/* --- LAYOUT 2 CỘT --- */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {/* CỘT TRÁI (Recommend) - Giữ nguyên code cũ của bạn */}
+                        {/* CỘT TRÁI (Recommend) */}
                         <div className="md:col-span-2">
-                            <h2
-                                className="text-xl font-bold text-[#2D1B4D] border-b pb-2 mb-5"
-                                style={{ paddingBottom: '8px', marginBottom: '20px' }}
-                            >
-                                Bạn có thể thích...
-                            </h2>
+                            <h2 className="text-xl font-bold text-[#2D1B4D] border-b pb-2 mb-5">Bạn có thể thích...</h2>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                 {randomProducts.map((p) => (
                                     <RecommendCard key={p.id} product={p} />
@@ -314,7 +287,7 @@ export default function Cart() {
                             </div>
                         </div>
 
-                        {/* CỘT PHẢI: TỔNG CỘNG (Đã gắn biến tính toán) */}
+                        {/* CỘT PHẢI: THANH TOÁN */}
                         <div className="md:col-span-1">
                             <div className="border border-gray-200 rounded-sm">
                                 <h2
@@ -325,66 +298,19 @@ export default function Cart() {
                                 </h2>
 
                                 <div style={{ padding: '20px' }}>
-                                    {/* Tạm tính (Dynamic Variable) */}
+                                    {/* Tạm tính */}
                                     <div className="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">
                                         <span className="font-bold text-gray-600">Tạm tính</span>
                                         <span className="font-bold text-gray-500">{subTotal.toLocaleString()} VND</span>
                                     </div>
 
                                     {/* Vận chuyển */}
-                                    <div
-                                        className="border-b border-gray-100"
-                                        style={{ paddingBottom: '16px', marginBottom: '16px' }}
-                                    >
-                                        <span className="font-bold text-gray-600 block" style={{ marginBottom: '8px' }}>
-                                            Vận chuyển
-                                        </span>
-                                        <div className="space-y-3">
-                                            <label className="flex items-start gap-2 cursor-pointer">
-                                                <input
-                                                    type="radio"
-                                                    name="shipping"
-                                                    checked={shippingMethod === 'tietkiem'}
-                                                    onChange={() => setShippingMethod('tietkiem')}
-                                                    className=" accent-pink-500"
-                                                    style={{ marginTop: '4px' }}
-                                                />
-                                                <div className="text-sm">
-                                                    Giao tiết kiệm: <b>25.000 VND</b>
-                                                </div>
-                                            </label>
 
-                                            <label className="flex items-start gap-2 cursor-pointer">
-                                                <input
-                                                    type="radio"
-                                                    name="shipping"
-                                                    checked={shippingMethod === 'hoatoc'}
-                                                    onChange={() => setShippingMethod('hoatoc')}
-                                                    className="mt-1 accent-pink-500"
-                                                />
-                                                <div className="text-sm">
-                                                    Giao hỏa tốc: <b>30.000 VND</b>
-                                                </div>
-                                            </label>
-
-                                            <label className="flex items-center gap-2 cursor-pointer">
-                                                <input
-                                                    type="radio"
-                                                    name="shipping"
-                                                    checked={shippingMethod === 'cuahang'}
-                                                    onChange={() => setShippingMethod('cuahang')}
-                                                    className="accent-pink-500"
-                                                />
-                                                <span className="text-sm text-gray-700">Nhận tại cửa hàng (0đ)</span>
-                                            </label>
-                                        </div>
-                                    </div>
-
+                                    {/* Phương thức thanh toán */}
                                     <div className="border-b border-gray-100 pb-4 mb-4">
                                         <span className="font-bold text-gray-600 block mb-2">
                                             Phương thức thanh toán
                                         </span>
-
                                         <div className="space-y-3">
                                             {/* COD */}
                                             <label className="flex items-start gap-2 cursor-pointer">
@@ -393,7 +319,7 @@ export default function Cart() {
                                                     name="payment"
                                                     checked={paymentMethod === 'cod'}
                                                     onChange={() => setPaymentMethod('cod')}
-                                                    className="mt-1 accent-pink-500"
+                                                    className="accent-pink-500 mt-1"
                                                 />
                                                 <div className="text-sm">
                                                     <b>Thanh toán tiền mặt</b>
@@ -403,46 +329,49 @@ export default function Cart() {
                                                 </div>
                                             </label>
 
-                                            {/* SMART BANKING */}
+                                            {/* Banking */}
                                             <label className="flex items-start gap-2 cursor-pointer">
                                                 <input
                                                     type="radio"
                                                     name="payment"
                                                     checked={paymentMethod === 'banking'}
                                                     onChange={() => setPaymentMethod('banking')}
-                                                    className="mt-1 accent-pink-500"
+                                                    className="accent-pink-500 mt-1"
                                                 />
                                                 <div className="text-sm">
-                                                    <b>Smart Banking</b>
+                                                    <b>Smart Banking (SePay)</b>
                                                     <p className="text-xs text-gray-500">
-                                                        Chuyển khoản qua ngân hàng / QR
+                                                        Quét mã QR - Tự động xác nhận
                                                     </p>
                                                 </div>
                                             </label>
                                         </div>
                                     </div>
 
-                                    {/* TỔNG TIỀN CUỐI CÙNG (Dynamic Variable) */}
+                                    {/* Tổng tiền */}
                                     <div className="flex justify-between items-start mb-5">
                                         <span className="font-bold text-gray-600">Tổng</span>
                                         <div className="text-right">
                                             <div className="font-bold text-gray-800 text-lg">
-                                                {finalTotal.toLocaleString()} VND
+                                                {subTotal.toLocaleString()} VND
                                             </div>
                                             <span className="text-xs font-normal text-gray-500">(Đã bao gồm VAT)</span>
                                         </div>
                                     </div>
 
-                                    {paymentMethod === "banking"
-                                        ?
+                                    {/* Nút thanh toán */}
+                                    {paymentMethod === 'banking' ? (
+                                        // Form ẩn để submit sang SePay
                                         <form action={checkoutUrl} method="POST">
-                                            {Object.keys(fields ?? {}).map(field => (
+                                            {Object.keys(fields ?? {}).map((field) => (
                                                 <input key={field} type="hidden" name={field} value={fields[field]} />
                                             ))}
                                             <PayButton type="submit" />
                                         </form>
-                                        :
-                                        <PayButton onClick={handleCheckout} />}
+                                    ) : (
+                                        // Nút bấm cho COD
+                                        <PayButton onClick={handleCheckoutCOD} />
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -453,12 +382,15 @@ export default function Cart() {
     );
 }
 
+// Button Component
 function PayButton({ type, onClick }) {
-    return <button
-        className="w-full cursor-pointer bg-[#f4a7bb] text-white font-bold text-lg rounded-xl hover:bg-pink-400 transition-colors shadow-sm uppercase py-3"
-        type={type}
-        onClick={onClick}
-    >
-        Thanh toán
-    </button>
+    return (
+        <button
+            className="w-full cursor-pointer bg-[#f4a7bb] text-white font-bold text-lg rounded-xl hover:bg-pink-400 transition-colors shadow-sm uppercase py-3"
+            type={type}
+            onClick={onClick}
+        >
+            Thanh toán
+        </button>
+    );
 }

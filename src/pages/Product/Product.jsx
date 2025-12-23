@@ -135,16 +135,10 @@ export default function Product() {
                         <div className="flex gap-5" style={{ padding: ' 0 10px' }}>
                             <button
                                 onClick={handleClickCart}
-                                className="flex-1 bg-pink-200 text-pink-700 font-bold rounded-full hover:bg-pink-300 transition"
+                                className="flex-1 cursor-pointer bg-pink-200 text-pink-700 font-bold rounded-full hover:bg-pink-300 transition"
                                 style={{ padding: '8px 0' }}
                             >
                                 THÊM VÀO GIỎ HÀNG
-                            </button>
-                            <button
-                                className="flex-1 bg-pink-400 text-white font-bold  rounded-full hover:bg-pink-500 transition"
-                                style={{ padding: '8px 0' }}
-                            >
-                                MUA NGAY
                             </button>
                         </div>
 

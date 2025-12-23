@@ -29,6 +29,7 @@ export default function UserAddress() {
             .then((response) => response.json())
             .then((data) => {
                 if (data.error === 0) {
+                    console.log(data.data);
                     setProvinces(data.data);
                 }
             })
@@ -148,7 +149,6 @@ export default function UserAddress() {
             Ward: formData.Ward,
             FullName: userStorage.displayName || 'PHi',
         };
-
         if (!updatedUser) return;
 
         fetch('https://localhost:7216/api/Address/save', {
@@ -171,7 +171,7 @@ export default function UserAddress() {
                 };
                 delete userToStore.UserId;
                 delete userToStore.FullName;
-                localStorage.setItem('User', JSON.stringify(userToStore));
+                localStorage.setItem('User', JSON.stringify({ ...userToStore, role: userStorage.role }));
                 alert('Cập nhật địa chỉ thành công!');
             })
             .catch((err) => {
