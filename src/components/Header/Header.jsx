@@ -1,5 +1,5 @@
 import { Navigate } from '@/components/Header/Navigate/Navigate.jsx';
-import pawtopiaLogo from '@/assets/pawtopiaLogo.png';
+import pawtopiaLogo from '@/assets/logohome.png';
 import { Search, Heart, ShoppingBasket, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 export default function Header() {
